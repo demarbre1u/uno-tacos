@@ -2,4 +2,15 @@
 <script>
     var roomId = '{{roomId}}';
     var socket = io();
+    var userId;
+
+    socket.on('connected', function(uid) {
+        userId = uid;
+        console.log({userId})
+        socket.emit('joinRoom', roomId);
+    }); 
+
+    socket.on('gameData', function(gameData) {
+        console.log({userId, gameData})
+    });
 </script>
