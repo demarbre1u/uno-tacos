@@ -1,3 +1,5 @@
+const { uid } = require('uid');
+
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -12,8 +14,16 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
 });
 
+app.get('/game/:id', (req, res) => {
+    const roomId = req.params.id;
+    console.log(roomId)
+
+    res.sendFile(__dirname + '/public/game.html');
+});
+
 io.on('connection', socket => {
-    console.log('a user logged in');
+    socket.uuid = uid(32);
+    console.log(`${socket.uuid} user logged in`);
 });
 
 server.listen(port, () => {
