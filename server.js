@@ -1,4 +1,5 @@
-const { uid } = require('uid');
+const Room = require('./classes/Room');
+const Player = require('./classes/Player');
 
 const express = require('express');
 const exphbs  = require('express-handlebars');
@@ -34,7 +35,7 @@ let roomList = [];
 
 // Lorsqu'un jouueur se connecte
 io.on('connection', socket => {
-    socket.uuid = uid(32);
+    let player = new Player(socket);
 
     // On indique au joueur qu'il est bien connecté, et on lui donne son uuid
     socket.emit('connected', socket.uuid)
@@ -44,29 +45,27 @@ io.on('connection', socket => {
     // Lorsqu'un joueur demande à rejoindre une room
     socket.on('joinRoom', roomId => {
         // On regarde si la room existe déjà
-        const roomExists = roomList.some(room => room.id === roomId)
+        const roomExists = roomList.some(room => room.getRoomName() === roomId)
 
         if(roomExists) {
             // Si elle existe, on ajoute le nouveau joueur à la liste des joueurs
             roomList.forEach(room => {
-                if(room.id === roomId) {
-                    room.players.push(socket.uuid);
+                if(room.getRoomName() === roomId) {
+                    room.addPlayer(player);
                 }
             });
         } else {
             // Si elle n'existe pas, on crée la nouvelle room
-            roomList.push({
-                id: roomId, 
-                owner: socket.uuid, 
-                players: [socket.uuid]
-            });
+            let room = new Room(roomId, player.getUuid())
+            room.addPlayer(player);
+            roomList.push(room);
         }
 
         socket.join(roomId)
         console.log(`The user ${socket.uuid} joined the room ${roomId}`)
 
         // On récupère les infos à jour de la room, et on les envoie à tous les joueurs de la room
-        const gameData = roomList.filter(room => room.id === roomId)[0];
+        const gameData = (roomList.filter(room => room.getRoomName() === roomId)[0]).getRoomData();
         io.to(roomId).emit('gameData', gameData);
     });
 
