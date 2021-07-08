@@ -9,10 +9,12 @@ class Player {
         this.username = `user#${this.uuid}`;
     }
 
+    // Retourne l'UUID de joueur
     getUuid() {
         return this.uuid;
     }
 
+    // Retourne le nom d'utilsiateur du joueur
     getUsername() {
         return this.username;
     }
