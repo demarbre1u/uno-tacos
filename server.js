@@ -1,9 +1,13 @@
 const { uid } = require('uid');
 
 const express = require('express');
+const exphbs  = require('express-handlebars');
+
 const app = express();
 const port = 3000;
 
+app.engine('handlebars', exphbs());
+app.set('view engine', 'handlebars');
 app.use(express.static('public'));
 
 const http = require('http');
@@ -13,14 +17,14 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
+    res.render('home');
 });
 
 app.get('/game/:id', (req, res) => {
     const roomId = req.params.id;
     console.log(roomId)
 
-    res.sendFile(__dirname + '/public/game.html');
+    res.render('game', {'roomId': roomId});
 });
 
 io.on('connection', socket => {
