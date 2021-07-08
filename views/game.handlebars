@@ -1,3 +1,5 @@
+<button id="start-game-btn" style="display: none" onclick="startGame()">Start game</button>
+
 <script src="../socket.io/socket.io.js"></script>
 <script>
     var roomId = '{{roomId}}';
@@ -6,11 +8,22 @@
 
     socket.on('connected', function(uid) {
         userId = uid;
-        console.log({userId})
         socket.emit('joinRoom', roomId);
     }); 
 
     socket.on('gameData', function(gameData) {
-        console.log({userId, gameData})
+        var gameState = gameData.roomState;
+        var gameOwner = gameData.roomOwner;
+
+        console.log({gameState, gameOwner })
+
+        if(gameState === 1 && gameOwner === userId) {
+            var startGameBtn = document.getElementById('start-game-btn');
+            startGameBtn.style.display = 'block'
+        }
     });
+
+    function startGame() {
+        console.log('game started');
+    }
 </script>

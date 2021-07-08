@@ -9,7 +9,7 @@ const server = http.createServer(app);
 
 const { Server } = require("socket.io");
 const io = new Server(server);
-const gameServer = require('./server/game-server')
+const gameServer = require('./server/GameServer')
 
 // On définit Handlebars comme moteur de template
 app.engine('handlebars', exphbs());

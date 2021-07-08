@@ -1,8 +1,11 @@
+const RoomStates = require('../states/RoomStates')
+
 class Room {
     constructor(name, owner) {
         this.name = name;
         this.owner = owner;
         this.playerList = [];
+        this.state = RoomStates.WAITING_FOR_PLAYERS;
     }
 
     // Renvoie le nom de la room
@@ -25,12 +28,28 @@ class Room {
         this.playerList.push(playerName);
     }
 
+    // Retourne le nombre de joueurs dans la Room
+    getNumberOfPlayers() {
+        return this.playerList.length;
+    }
+
+    // Retourne l'état de la Room
+    getRoomState() {
+        return this.state;
+    }
+
+    // Change l'état de la Room
+    setRoomState(newState) {
+        this.state = newState;
+    }
+
     // Renvoie les données de la Room
     getRoomData() {
         return {
             roomName: this.name, 
             roomOwner: this.owner, 
-            roomPlayers: this.playerList
+            roomPlayers: this.playerList, 
+            roomState: this.state
         };
     }
 }
