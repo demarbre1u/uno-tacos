@@ -4,9 +4,11 @@
 <script>
     var CardColors = JSON.parse('{{{CardColors}}}');
     var CardTypes = JSON.parse('{{{CardTypes}}}');
+    var RoomStates = JSON.parse('{{{RoomStates}}}');
 
-    console.log(CardColors);
-    console.log(CardTypes);
+    console.log({CardColors});
+    console.log({CardTypes});
+    console.log({RoomStates});
 
     var roomId = '{{roomId}}';
     var socket = io();

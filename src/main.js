@@ -1,5 +1,6 @@
 const CardColors = require('./enum/CardColors');
 const CardTypes = require('./enum/CardTypes');
+const RoomStates = require('./enum/RoomStates');
 
 const express = require('express');
 const exphbs  = require('express-handlebars');
@@ -31,7 +32,8 @@ app.get('/game/:id', (req, res) => {
     res.render('game', {
         roomId: roomId, 
         CardColors: JSON.stringify(CardColors),
-        CardTypes: JSON.stringify(CardTypes)
+        CardTypes: JSON.stringify(CardTypes), 
+        RoomStates: JSON.stringify(RoomStates)
     });
 });
 
