@@ -1,6 +1,6 @@
 const Room = require('../classes/Room');
 const Player = require('../classes/Player');
-const RoomStates = require('../states/RoomStates')
+const RoomStates = require('../enum/RoomStates')
 
 
 module.exports = function(io) {
@@ -45,7 +45,14 @@ module.exports = function(io) {
             }
 
             const gameData = room.getRoomData();
+            io.to(roomId).emit('gameData', gameData);
+        });
 
+        socket.on('startGame', roomId => {
+            let room = roomList.filter(room => room.getRoomName() === roomId)[0];
+            room.startGame();
+
+            const gameData = room.getRoomData();
             io.to(roomId).emit('gameData', gameData);
         });
     });

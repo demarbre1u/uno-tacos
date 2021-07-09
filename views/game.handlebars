@@ -15,7 +15,7 @@
         var gameState = gameData.roomState;
         var gameOwner = gameData.roomOwner;
 
-        console.log({gameState, gameOwner })
+        console.log(gameData)
 
         if(gameState === 1 && gameOwner === userId) {
             var startGameBtn = document.getElementById('start-game-btn');
@@ -24,6 +24,8 @@
     });
 
     function startGame() {
-        console.log('game started');
+        socket.emit('startGame', roomId);
+        var startGameBtn = document.getElementById('start-game-btn');
+        startGameBtn.style.display = 'none'
     }
 </script>

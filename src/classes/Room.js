@@ -1,4 +1,7 @@
-const RoomStates = require('../states/RoomStates')
+const RoomStates = require('../enum/RoomStates');
+const TurnStates = require('../enum/TurnStates');
+
+const CardHelper = require('./CardHelper');
 
 class Room {
     constructor(name, owner) {
@@ -6,6 +9,31 @@ class Room {
         this.owner = owner;
         this.playerList = [];
         this.state = RoomStates.WAITING_FOR_PLAYERS;
+
+        this.turnDirection = TurnStates.TURN_LEFT;
+        this.playerTurn = null;
+
+        this.cardHeap = [];
+        this.cardDeck = [];
+    }
+
+    startGame() {
+        this.state = RoomStates.GAME_ONGOING;
+
+        // On prends un joueur au hasard pour commencer 
+        const randomIndex = this.pickRandomPlayer();
+        this.playerTurn = this.playerList[randomIndex];
+
+        this.cardDeck = CardHelper.generateCardDeck();
+        this.playerList.forEach(player => {
+            const cards = this.cardDeck.splice(0, 7);
+            cards.forEach(card => player.addCard(card));
+        })
+    }
+
+    // Retourne l'index d'un joueur au hasard dans la liste des joueurs
+    pickRandomPlayer() {
+        return Math.floor(Math.random() * this.playerList.length);
     }
 
     // Renvoie le nom de la room
@@ -49,7 +77,10 @@ class Room {
             roomName: this.name, 
             roomOwner: this.owner, 
             roomPlayers: this.playerList, 
-            roomState: this.state
+            roomState: this.state, 
+            roomPlayerTurn: this.playerTurn,
+            roomTurnDirection: this.turnDirection, 
+            roomCardDeck: this.cardDeck
         };
     }
 }
