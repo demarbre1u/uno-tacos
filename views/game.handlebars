@@ -1,5 +1,19 @@
 <button id="start-game-btn" style="display: none" onclick="startGame()">Start game</button>
 
+
+
+<div class="row justify-content-center border border-1" id="gamePlay">
+    <div class="col-12 align-self-start">
+        <h2 id="roomName"></h2>
+    </div>
+    <div class="col-12 align-self-center">
+
+    </div>
+    <div class="col-12 align-self-end">
+        <div id="ownerCards"></div>
+    </div>
+</div>
+
 <script src="../socket.io/socket.io.js"></script>
 <script>
     var CardColors = JSON.parse('{{{CardColors}}}');
@@ -13,6 +27,8 @@
     var roomId = '{{roomId}}';
     var socket = io();
     var userId;
+
+    var currentUser;
 
     socket.on('connected', function(uid) {
         userId = uid;
@@ -29,6 +45,17 @@
             var startGameBtn = document.getElementById('start-game-btn');
             startGameBtn.style.display = 'block'
         }
+
+        currentUser = gameData.roomPlayers.find(u => u.uuid === userId);
+
+        var html = '';
+        currentUser.cards.forEach(c => {
+            html += getCardTemplate(c);
+        });
+
+        $('#ownerCards').html(html);
+
+        $('#roomName').text(gameData.roomName);
     });
 
     function startGame() {
@@ -36,4 +63,46 @@
         var startGameBtn = document.getElementById('start-game-btn');
         startGameBtn.style.display = 'none'
     }
+
+
+    function getCardTemplate(card) {
+        let colorClass = 'color-';
+        switch (card.color) {
+            case CardColors.COLOR_RED:
+                colorClass += 'red'; break;
+            case CardColors.COLOR_BLUE:
+                colorClass += 'blue'; break;
+            case CardColors.COLOR_GREEN:
+                colorClass += 'green'; break;
+            case CardColors.COLOR_YELLOW:
+                colorClass += 'yellow'; break;
+            case CardColors.COLOR_SPECIAL:
+            default:
+                colorClass += 'black'; break;
+        }
+
+        let cardTypeImg = '';
+        switch (card.type) {
+            case CardTypes.TYPE_REVERSE:
+                cardTypeImg = 'img/card-types/reverse.png'; break;
+            case CardTypes.TYPE_SKIP:
+                cardTypeImg = 'img/card-types/skip.png'; break;
+            case CardTypes.TYPE_PLUS_2:
+                cardTypeImg = 'img/card-types/plus2.png'; break;
+            case CardTypes.TYPE_PLUS_4:
+                cardTypeImg = 'img/card-types/plus4.png'; break;
+            case CardTypes.TYPE_COLOR_CHANGE:
+                cardTypeImg = 'img/card-types/color-change.png'; break;
+            default: break;
+        }
+
+        let cardType = cardTypeImg.indexOf('img') > -1 ?
+                '<img src="' + cardTypeImg +'" alt=""/>' : card.type;
+
+        return '<div class="uno-card ' + colorClass + '"><div class="row">' +
+                '<div class="col-3"><div class="type">' + cardType + '</div></div> ' +
+                '<div class="col-12"><div class="big type"> ' + cardType + '</div></div> ' +
+                '</div> </div>';
+    }
+
 </script>
