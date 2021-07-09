@@ -1,3 +1,6 @@
+const CardColors = require('./enum/CardColors');
+const CardTypes = require('./enum/CardTypes');
+
 const express = require('express');
 const exphbs  = require('express-handlebars');
 
@@ -9,7 +12,7 @@ const server = http.createServer(app);
 
 const { Server } = require("socket.io");
 const io = new Server(server);
-const gameServer = require('./server/GameServer')
+const gameServer = require('./server/GameServer');
 
 // On définit Handlebars comme moteur de template
 app.engine('handlebars', exphbs());
@@ -25,7 +28,11 @@ app.get('/', (req, res) => {
 app.get('/game/:id', (req, res) => {
     const roomId = req.params.id;
 
-    res.render('game', {'roomId': roomId});
+    res.render('game', {
+        roomId: roomId, 
+        CardColors: JSON.stringify(CardColors),
+        CardTypes: JSON.stringify(CardTypes)
+    });
 });
 
 gameServer(io); 

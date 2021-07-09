@@ -2,6 +2,12 @@
 
 <script src="../socket.io/socket.io.js"></script>
 <script>
+    var CardColors = JSON.parse('{{{CardColors}}}');
+    var CardTypes = JSON.parse('{{{CardTypes}}}');
+
+    console.log(CardColors);
+    console.log(CardTypes);
+
     var roomId = '{{roomId}}';
     var socket = io();
     var userId;
