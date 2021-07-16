@@ -1,16 +1,38 @@
-<button id="start-game-btn" style="display: none" onclick="startGame()">Start game</button>
-
-
-
-<div class="row justify-content-center border border-1" id="gamePlay">
-    <div class="col-12 align-self-start">
+<div class="row justify-content-center" id="gamePlay">
+    <div class="col-12 text-center p-5">
         <h2 id="roomName"></h2>
+        <button id="start-game-btn"
+                type="button"
+                class="btn btn-success btn-lg"
+                style="display: none" onclick="startGame()">Start game</button>
+        <div id="players"></div>
     </div>
-    <div class="col-12 align-self-center">
-
+    <div class="col-8" id="gameDeck"></div>
+    <div class="col-4" id="roomCardDeck">
+        <div class="uno-card shaking">
+            <div class="row color-black">
+                <div class="col-12 small"><div class="type"></div></div>
+                <div class="col-12">
+                    <div class="big type">
+                        <img src="../../img/hat.png" class="smallImg" alt="Card deck"/>
+                    </div>
+                </div>
+                <div class="col-12 small text-right"><div class="type"></div></div>
+            </div>
+        </div>
     </div>
-    <div class="col-12 align-self-end">
-        <div id="ownerCards"></div>
+    <div class="col-12" id="ownerCards"></div>
+    <div class="col-12" id="uno">
+        <button id="start-game-btn"
+                type="button"
+                class="btn btn-success btn-lg"
+                style="display: none" onclick="screamUno()">UNO !</button>
+    </div>
+    <div class="col-12" id="contre-uno">
+        <button id="start-game-btn"
+                type="button"
+                class="btn btn-success btn-lg"
+                style="display: none" onclick="screamContreUno()">CONTRE UNO !</button>
     </div>
 </div>
 
@@ -39,33 +61,50 @@
         var gameState = gameData.roomState;
         var gameOwner = gameData.roomOwner;
 
-        console.log(gameData)
+        console.log(gameData);
 
         if(gameState === 1 && gameOwner === userId) {
             var startGameBtn = document.getElementById('start-game-btn');
-            startGameBtn.style.display = 'block'
+            startGameBtn.style.display = 'block';
         }
 
         currentUser = gameData.roomPlayers.find(u => u.uuid === userId);
 
         var html = '';
-        currentUser.cards.forEach(c => {
-            html += getCardTemplate(c);
+        var leftIndex = 0;
+        currentUser.cards.forEach((c, index) => {
+            html += getCardTemplate(c, index, leftIndex);
+            leftIndex += 140;
         });
 
         $('#ownerCards').html(html);
-
         $('#roomName').text(gameData.roomName);
+        $('#roomCardDeck').show();
     });
 
     function startGame() {
         socket.emit('startGame', roomId);
-        var startGameBtn = document.getElementById('start-game-btn');
-        startGameBtn.style.display = 'none'
+        $('#start-game-btn').hide();
+        $('#ownerCards').empty();
     }
 
+    function chooseCard() {
+        // todo: choose card from player cards and add it game deck
+    }
 
-    function getCardTemplate(card) {
+    function pickUpCards() {
+        // todo: pickup random card from deck and add it to player cards
+    }
+
+    function screamUno() {
+        alert('UNO !');
+    }
+
+    function screamContreUno() {
+        alert('CONTRE UNO !');
+    }
+
+    function getCardTemplate(card, index, leftIndex) {
         let colorClass = 'color-';
         switch (card.color) {
             case CardColors.COLOR_RED:
@@ -81,28 +120,42 @@
                 colorClass += 'black'; break;
         }
 
-        let cardTypeImg = '';
+        let bigCardType = '';
+        let smallCardType = '';
         switch (card.type) {
             case CardTypes.TYPE_REVERSE:
-                cardTypeImg = 'img/card-types/reverse.png'; break;
+                smallCardType = '<img class="smallImg" src="../../img/card-types/reverse.png" alt=""/>';
+                bigCardType = '<img class="bigImg" src="../../img/card-types/reverse.png" alt=""/>';
+                break;
             case CardTypes.TYPE_SKIP:
-                cardTypeImg = 'img/card-types/skip.png'; break;
+                smallCardType = '<img class="smallImg" src="../../img/card-types/skip.png" alt=""/>';
+                bigCardType = '<img class="bigImg" src="../../img/card-types/skip.png" alt=""/>';
+                break;
             case CardTypes.TYPE_PLUS_2:
-                cardTypeImg = 'img/card-types/plus2.png'; break;
+                smallCardType = '+2';
+                bigCardType = '+2';
+                break;
             case CardTypes.TYPE_PLUS_4:
-                cardTypeImg = 'img/card-types/plus4.png'; break;
+                smallCardType = '+4';
+                bigCardType = '+4';
+                break;
             case CardTypes.TYPE_COLOR_CHANGE:
-                cardTypeImg = 'img/card-types/color-change.png'; break;
-            default: break;
+                smallCardType = '<img class="smallImg" src="../../img/card-types/color-change.png" alt=""/>';
+                bigCardType = '<img class="bigImg" src="../../img/card-types/color-change.png alt=""/>';
+                break;
+            default:
+                bigCardType = card.type;
+                smallCardType = card.type;
+                break;
         }
 
-        let cardType = cardTypeImg.indexOf('img') > -1 ?
-                '<img src="' + cardTypeImg +'" alt=""/>' : card.type;
-
-        return '<div class="uno-card ' + colorClass + '"><div class="row">' +
-                '<div class="col-3"><div class="type">' + cardType + '</div></div> ' +
-                '<div class="col-12"><div class="big type"> ' + cardType + '</div></div> ' +
-                '</div> </div>';
+        return '<div class="uno-card elevate" style="left: '+ leftIndex +'px">' +
+                '<div class="row ' + colorClass + '">' +
+                '<div class="col-12 small"><div class="type">' + smallCardType + '</div></div> ' +
+                '<div class="col-12"><div class="big type"> ' + bigCardType + '</div></div> ' +
+                '<div class="col-12 small text-right"><div class="type">' + smallCardType + '</div></div> ' +
+                '</div>' +
+                '</div>';
     }
 
 </script>
