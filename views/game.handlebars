@@ -1,10 +1,24 @@
 <div class="row justify-content-center" id="gamePlay">
-    <div class="col-12 text-center p-5">
-        <h2 id="roomName"></h2>
+    <div class="floating-logo shaking" data-bs-toggle="tooltip" data-bs-placement="bottom"
+         title='Github: Uno-tacos'>
+        <img src="../../img/hat.png" class="img-fluid"/>
+    </div>
+    <div class="col-6 text-center p-5">
         <button id="start-game-btn"
                 type="button"
                 class="btn btn-success btn-lg"
                 style="display: none" onclick="startGame()">Start game</button>
+        <p>Partager le lien de la room</p>
+        <div class="input-group mb-3 share-link">
+            <input type="text" class="form-control" placeholder="Share link"
+                   readonly id="roomName"
+                   aria-label="Share room link" aria-describedby="button-addon2">
+            <button class="btn btn-dark" type="button" id="button-addon2"
+                    onclick="copyRoomName()">
+                <i class="ri-file-copy-line"></i>
+            </button>
+        </div>
+        <div id="roomInfo" class="small fst-italic"></div>
         <div id="players"></div>
     </div>
     <div class="col-8" id="gameDeck"></div>
@@ -70,6 +84,9 @@
                     var startGameBtn = document.getElementById('start-game-btn');
                     startGameBtn.style.display = 'block';
                 }
+
+                $('#roomInfo').html(gameData.roomPlayers.length + ' joueurs ont rejoint la room');
+
                 break;
             case RoomStates.GAME_ONGOING:
                 currentUser = gameData.roomPlayers.find(u => u.uuid === userId);
@@ -102,13 +119,25 @@
                 break;
         }
 
-        $('#roomName').text(gameData.roomName);
+        $('#roomName').val('http://localhost:3000/game/' + gameData.roomName);
     });
 
     function startGame() {
         socket.emit('startGame', roomId);
         $('#start-game-btn').hide();
         $('#ownerCards').empty();
+    }
+
+    function copyRoomName() {
+        var copyTextarea = document.querySelector('#roomName');
+        copyTextarea.focus();
+        copyTextarea.select();
+
+        try {
+            var successful = document.execCommand('copy');
+        } catch (err) {
+            console.log('Oops, unable to copy');
+        }
     }
 
     function chooseCard() {
@@ -143,8 +172,7 @@
                 colorClass += 'black'; break;
         }
 
-        let bigCardType = '';
-        let smallCardType = '';
+        let bigCardType, smallCardType;
         switch (card.type) {
             case CardTypes.TYPE_REVERSE:
                 smallCardType = '<img class="smallImg" src="../../img/card-types/reverse.png" alt=""/>';

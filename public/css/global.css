@@ -1,6 +1,9 @@
 body {
     height: 100vh;
     overflow: hidden;
+
+    background: radial-gradient(ellipse at top, #fff8a5f2, transparent),
+    radial-gradient(ellipse at bottom, #e60c0c, transparent);
 }
 
 p, span, div {
@@ -25,7 +28,6 @@ h1 {
 
 #gamePlay {
     height: 100%;
-    background: url(../../img/game-bg.png);
 }
 
 #ownerCards {
@@ -140,4 +142,17 @@ h1 {
     40%, 60% {
         transform: translate3d(4px, 0, 0);
     }
+}
+
+.floating-logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+}
+
+.floating-logo:hover {
+    -webkit-animation: rubberBand 1s infinite;
+    animation: rubberBand 1s infinite;
+    cursor:pointer;
 }
