@@ -63,23 +63,46 @@
 
         console.log(gameData);
 
-        if(gameState === 1 && gameOwner === userId) {
-            var startGameBtn = document.getElementById('start-game-btn');
-            startGameBtn.style.display = 'block';
+        switch(gameState) {
+            case RoomStates.READY: 
+                // Affiche le bouton "Start game" s'il y a assez de joueurs, et que l'utilisateur courrant est le propriétaire de la room
+                if(gameOwner === userId) {
+                    var startGameBtn = document.getElementById('start-game-btn');
+                    startGameBtn.style.display = 'block';
+                }
+                break;
+            case RoomStates.GAME_ONGOING:
+                currentUser = gameData.roomPlayers.find(u => u.uuid === userId);
+
+                // Affiche les cartes de l'utilisateur courrant
+                var html = '';
+                var leftIndex = 0;
+                currentUser.cards.forEach((c, index) => {
+                    html += getCardTemplate(c, index, leftIndex);
+                    leftIndex += 140;
+                });
+
+                $('#ownerCards').html(html);
+                $('#roomCardDeck').show();
+
+                var isUserTurn = gameData.roomPlayerTurn.uuid === userId;
+                // Si c'est le tour de l'utilsiateur courrant, les cartes peuvent être cliquées pour être jouées
+                if(isUserTurn) {
+                    console.log('It is your turn!');
+                    $('.uno-card').on('click', function(event) {
+                        var cardId = $(this).data('id');
+                        socket.emit('playCard', {
+                            roomId: roomId,
+                            playerId: userId, 
+                            cardId: cardId, 
+                        });
+                    });
+                }
+
+                break;
         }
 
-        currentUser = gameData.roomPlayers.find(u => u.uuid === userId);
-
-        var html = '';
-        var leftIndex = 0;
-        currentUser.cards.forEach((c, index) => {
-            html += getCardTemplate(c, index, leftIndex);
-            leftIndex += 140;
-        });
-
-        $('#ownerCards').html(html);
         $('#roomName').text(gameData.roomName);
-        $('#roomCardDeck').show();
     });
 
     function startGame() {
@@ -149,7 +172,7 @@
                 break;
         }
 
-        return '<div class="uno-card elevate" style="left: '+ leftIndex +'px">' +
+        return '<div class="uno-card elevate" data-id="' + index + '" style="left: '+ leftIndex +'px">' +
                 '<div class="row ' + colorClass + '">' +
                 '<div class="col-12 small"><div class="type">' + smallCardType + '</div></div> ' +
                 '<div class="col-12"><div class="big type"> ' + bigCardType + '</div></div> ' +

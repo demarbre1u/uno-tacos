@@ -31,6 +31,10 @@ class Room {
         })
     }
 
+    addCardToHeap(card) {
+        this.cardHeap.push(card);
+    }
+
     // Retourne l'index d'un joueur au hasard dans la liste des joueurs
     pickRandomPlayer() {
         return Math.floor(Math.random() * this.playerList.length);
@@ -49,6 +53,11 @@ class Room {
     // Vérifie si un joueur est présent dans la Room
     containsPlayer(playerName) {
         return this.playerList.some(player => player.getUuid() === playerName);
+    }
+
+    // Retourne le joueur dans la salle correspondant à l'uuid donné
+    getPlayer(playerUuid) {
+        return this.playerList.find(player => player.getUuid() === playerUuid);
     }
 
     // Ajoute un joueur à la liste des joueurs de la room
@@ -80,7 +89,8 @@ class Room {
             roomState: this.state, 
             roomPlayerTurn: this.playerTurn,
             roomTurnDirection: this.turnDirection, 
-            roomCardDeck: this.cardDeck
+            roomCardDeck: this.cardDeck, 
+            roomCardHeap: this.cardHeap
         };
     }
 }

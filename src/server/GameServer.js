@@ -55,5 +55,20 @@ module.exports = function(io) {
             const gameData = room.getRoomData();
             io.to(roomId).emit('gameData', gameData);
         });
+
+        socket.on('playCard', cardPlayedData => {
+            const roomId = cardPlayedData.roomId;
+            const playerId = cardPlayedData.playerId;
+            const cardId = cardPlayedData.cardId;
+
+            let room = roomList.find(room => room.getRoomName() === roomId);
+            let player = room.getPlayer(playerId);
+            const cardPlayed = player.getCard(cardId);
+            player.removeCard(cardId);
+            room.addCardToHeap(cardPlayed);
+
+            const gameData = room.getRoomData();
+            io.to(roomId).emit('gameData', gameData);
+        });
     });
 }

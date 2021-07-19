@@ -15,6 +15,19 @@ class Player {
         this.cards.push(card);
     }
 
+    // Retourne la carte de la main d'un joueur correspondant à un id donné
+    getCard(cardId) {
+        return this.cards[cardId];
+    }
+
+    // Retire une carte de la main d'un joueur correspondant à un id donné
+    removeCard(cardId) {
+        this.cards = this.cards.filter((card, index) => {
+            console.log({index, cardId})
+            return index !== cardId
+        });
+    }
+
     // Récupère la liste des cartes d'un joueur
     getCards() {
         return this.cards;
