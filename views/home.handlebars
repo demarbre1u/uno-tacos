@@ -1,23 +1,32 @@
 
-<div class="container">
+<div class="container" id="home">
     <div class="row justify-content-center align-content-center">
-        <div class="col-12 text-center">
-            <img src="../../img/hat.png" alt="" width="100px" height="100px"
-                 class="animate__animated"
-                 style="display: inline-block"/>
+        <div class="col-12 text-center pt-5">
             <h1 style="display: inline-block">Uno Tacos</h1>
         </div>
     </div>
     <div class="row justify-content-center align-content-center">
-        <div class="col-6">
-            <a href="/game/test">New game</a>
-        </div>
-        <div class="col-5">
-
-        </div>
-        <div class="col-12">
-            <img src="../../img/tacos.png" class="img-fluid" alt="Uno Tacos"/>
+        <div class="d-grid gap-2 col-12 col-sm-6 col-md-5 col-lg-4 mx-auto">
+            <a class="btn btn-success btn-lg" id="new-game" role="button">New game</a>
         </div>
     </div>
 
 </div>
+
+<script>
+
+    $(document).ready(() => {
+        $('#new-game').attr('href', '/game/' + generateRoomId(6));
+    });
+
+    function generateRoomId(length) {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() *
+                    charactersLength));
+        }
+        return result;
+    }
+</script>
