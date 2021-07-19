@@ -51,13 +51,18 @@ class Room {
     }
 
     // Vérifie si un joueur est présent dans la Room
-    containsPlayer(playerName) {
-        return this.playerList.some(player => player.getUuid() === playerName);
+    containsPlayer(playerUuid) {
+        return this.playerList.some(player => player.getUuid() === playerUuid);
     }
 
     // Retourne le joueur dans la salle correspondant à l'uuid donné
     getPlayer(playerUuid) {
         return this.playerList.find(player => player.getUuid() === playerUuid);
+    }
+
+    // Retourne l'index dans la liste des joueurs du joueur correspondant à l'uuid donné
+    getPlayerIndex(playerUuid) {
+        return this.playerList.findIndex(player => player.getUuid() === playerUuid);
     }
 
     // Ajoute un joueur à la liste des joueurs de la room
@@ -78,6 +83,21 @@ class Room {
     // Change l'état de la Room
     setRoomState(newState) {
         this.state = newState;
+    }
+
+    // Retourne le nom joueur dont c'est le tour de jouer
+    getPlayerTurn() {
+        return this.playerTurn;
+    }
+
+    // Change le joueur dont c'est le tour
+    setPlayerTurn(playerIndex) {
+        this.playerTurn = this.playerList[playerIndex];
+    }
+
+    // Retourne le sens de rotation des tours
+    getTurnDirection() {
+        return this.turnDirection;
     }
 
     // Renvoie les données de la Room

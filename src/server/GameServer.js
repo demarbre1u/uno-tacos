@@ -1,6 +1,7 @@
 const Room = require('../classes/Room');
 const Player = require('../classes/Player');
 const RoomStates = require('../enum/RoomStates')
+const TurnStates = require('../enum/TurnStates')
 
 
 module.exports = function(io) {
@@ -56,6 +57,7 @@ module.exports = function(io) {
             io.to(roomId).emit('gameData', gameData);
         });
 
+        // Lorsqu'un joueur joue une carte
         socket.on('playCard', cardPlayedData => {
             const roomId = cardPlayedData.roomId;
             const playerId = cardPlayedData.playerId;
@@ -63,9 +65,32 @@ module.exports = function(io) {
 
             let room = roomList.find(room => room.getRoomName() === roomId);
             let player = room.getPlayer(playerId);
+            // On récupère la carte qui vient d'être jouée
             const cardPlayed = player.getCard(cardId);
+            // On retire la carte de la main du joueur
             player.removeCard(cardId);
+            // On ajoute la carte joué au tas de cartes
             room.addCardToHeap(cardPlayed);
+
+            const currentTurn = room.getPlayerTurn();
+            const currentTurnIndex = room.getPlayerIndex(currentTurn.getUuid());
+            const playerNumber = room.getNumberOfPlayers();
+            // On calcule l'index du joueur du tour suivant en fonction du sens de rotation des tours
+            let newIndex = currentTurnIndex;
+            switch(room.getTurnDirection()) {
+                case TurnStates.TURN_LEFT: 
+                    newIndex++;
+                    newIndex = newIndex % playerNumber;
+                    break;
+                case TurnStates.TURN_RIGHT: 
+                    newIndex--;
+                    if(newIndex < 0) {
+                        newIndex = playerNumber + newIndex;
+                    }
+                    break;
+            }
+
+            room.setPlayerTurn(newIndex);
 
             const gameData = room.getRoomData();
             io.to(roomId).emit('gameData', gameData);

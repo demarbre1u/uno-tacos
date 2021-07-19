@@ -22,10 +22,7 @@ class Player {
 
     // Retire une carte de la main d'un joueur correspondant à un id donné
     removeCard(cardId) {
-        this.cards = this.cards.filter((card, index) => {
-            console.log({index, cardId})
-            return index !== cardId
-        });
+        this.cards = this.cards.filter((card, index) => index !== cardId);
     }
 
     // Récupère la liste des cartes d'un joueur
