@@ -6,7 +6,7 @@
     height: 100vh;
 }
 
-.btn-success {
+.pulse-btn {
     -webkit-animation: pulse 1s infinite;
     animation: pulse 1s infinite;
     cursor:pointer;

@@ -30,8 +30,28 @@ h1 {
     height: 100%;
 }
 
+#roomCardHeap {
+    height: 80%;
+}
+
+#uno {
+    position: absolute;
+    bottom: 25%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 400px;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#uno button {
+    width: 45%;
+}
+
 #ownerCards {
-    position: relative;
+    position: absolute;
+    bottom: 20vh;
 }
 
 #start-game-btn {
@@ -117,6 +137,13 @@ h1 {
 .elevate:hover {
     top: -60px;
     z-index: 1;
+}
+
+#roomTurn p {
+    text-align: center;
+    padding: 5%;
+    font-weight: 900;
+    font-size: 2rem;
 }
 
 .shaking:hover {
