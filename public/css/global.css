@@ -97,7 +97,6 @@ h1 {
     border-radius: 135px 30px 135px 30px;
     padding: 3%;
     font-weight: bolder;
-    text-shadow: 0 0 7px black;
     text-align: center;
     height: 100%;
     display: flex;
@@ -136,6 +135,7 @@ h1 {
 
 .elevate:hover {
     top: -60px;
+
     z-index: 1;
 }
 
