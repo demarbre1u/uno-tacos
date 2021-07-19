@@ -1,12 +1,13 @@
+<div class="floating-logo shaking" data-bs-toggle="tooltip" data-bs-placement="bottom"
+     title='Github: Uno-tacos'>
+    <img src="../../img/hat.png" class="img-fluid"/>
+</div>
+
 <div class="row justify-content-center" id="gamePlay">
-    <div class="floating-logo shaking" data-bs-toggle="tooltip" data-bs-placement="bottom"
-         title='Github: Uno-tacos'>
-        <img src="../../img/hat.png" class="img-fluid"/>
-    </div>
-    <div class="col-6 text-center p-5">
+    <div class="col-12 col-sm-6 col-md-5 col-lg-5 text-center p-5" id="roomInfo">
         <button id="start-game-btn"
                 type="button"
-                class="btn btn-success btn-lg"
+                class="btn btn-success btn-lg pulse-btn"
                 style="display: none" onclick="startGame()">Start game</button>
         <p>Partager le lien de la room</p>
         <div class="input-group mb-3 share-link">
@@ -18,11 +19,19 @@
                 <i class="ri-file-copy-line"></i>
             </button>
         </div>
-        <div id="roomInfo" class="small fst-italic"></div>
-        <div id="players"></div>
+        <div class="alert alert-success" role="alert" style="display:none;" id="successful-copy">
+            Copied!
+        </div>
+        <div id="players" class="small fst-italic"></div>
     </div>
-    <div class="col-8" id="gameDeck"></div>
-    <div class="col-4" id="roomCardDeck">
+    <div class="col-8" id="roomTurn">
+        <p class="w-100"></p>
+        <div class="w-100 spinner" style="display: none;">
+            {{> spinner}}
+        </div>
+    </div>
+    <div class="col-8" id="roomCardHeap"></div>
+    <div class="col-3" id="roomCardDeck">
         <div class="uno-card shaking">
             <div class="row color-black">
                 <div class="col-12 small"><div class="type"></div></div>
@@ -34,20 +43,21 @@
                 <div class="col-12 small text-right"><div class="type"></div></div>
             </div>
         </div>
+        <div id="uno">
+            <button id="uno-btn"
+                    type="button"
+                    disabled="disabled"
+                    class="btn btn-success btn-lg"
+                    onclick="screamUno()">UNO !</button>
+            <button id="contre-uno-btn"
+                    type="button"
+                    disabled="disabled"
+                    class="btn btn-warning btn-lg"
+                    onclick="screamContreUno()">CONTRE UNO !</button>
+        </div>
+
     </div>
     <div class="col-12" id="ownerCards"></div>
-    <div class="col-12" id="uno">
-        <button id="start-game-btn"
-                type="button"
-                class="btn btn-success btn-lg"
-                style="display: none" onclick="screamUno()">UNO !</button>
-    </div>
-    <div class="col-12" id="contre-uno">
-        <button id="start-game-btn"
-                type="button"
-                class="btn btn-success btn-lg"
-                style="display: none" onclick="screamContreUno()">CONTRE UNO !</button>
-    </div>
 </div>
 
 <script src="../socket.io/socket.io.js"></script>
@@ -85,17 +95,19 @@
                     startGameBtn.style.display = 'block';
                 }
 
-                $('#roomInfo').html(gameData.roomPlayers.length + ' joueurs ont rejoint la room');
+                $('#roomInfo #players').html(gameData.roomPlayers.length + ' joueurs ont rejoint la room');
 
                 break;
             case RoomStates.GAME_ONGOING:
+                $('#roomInfo').hide();
+
                 currentUser = gameData.roomPlayers.find(u => u.uuid === userId);
 
                 // Affiche les cartes de l'utilisateur courrant
                 var html = '';
                 var leftIndex = 0;
                 currentUser.cards.forEach((c, index) => {
-                    html += getCardTemplate(c, index, leftIndex);
+                    html += getCardTemplate(c, 'user', index, leftIndex);
                     leftIndex += 140;
                 });
 
@@ -105,8 +117,9 @@
                 var isUserTurn = gameData.roomPlayerTurn.uuid === userId;
                 // Si c'est le tour de l'utilsiateur courrant, les cartes peuvent être cliquées pour être jouées
                 if(isUserTurn) {
-                    console.log('It is your turn!');
-                    $('.uno-card').on('click', function(event) {
+                    $('#roomTurn p').text('It is your turn!');
+                    $('.spinner').hide();
+                    $('#ownerCards .uno-card').on('click', function(event) {
                         var cardId = $(this).data('id');
                         socket.emit('playCard', {
                             roomId: roomId,
@@ -114,7 +127,21 @@
                             cardId: cardId, 
                         });
                     });
+
+                    if (currentUser.cards.length === 1) {
+                        $('#uno-btn').prop('disabled', false);
+                    }
                 }
+                else {
+                    $('#roomTurn p').empty();
+                    $('.spinner').show();
+                }
+
+                let lastAddedCard = gameData.roomCardHeap.slice(-1)[0];
+                $('#roomCardHeap').html(getCardTemplate(lastAddedCard, 'deck', 0, 0));
+
+                if (gameData.roomPlayers.some(p => p.cards.length === 1))
+                    $('#contre-uno-btn').prop('disabled', false);
 
                 break;
         }
@@ -125,7 +152,7 @@
     function startGame() {
         socket.emit('startGame', roomId);
         $('#start-game-btn').hide();
-        $('#ownerCards').empty();
+        $('#ownerCards').html('');
     }
 
     function copyRoomName() {
@@ -134,13 +161,15 @@
         copyTextarea.select();
 
         try {
-            var successful = document.execCommand('copy');
+            document.execCommand('copy');
+            $('#successful-copy').show('slow').delay(3000).hide('slow');
         } catch (err) {
             console.log('Oops, unable to copy');
         }
     }
 
-    function chooseCard() {
+    function chooseCard(event) {
+        console.log(event)
         // todo: choose card from player cards and add it game deck
     }
 
@@ -150,13 +179,19 @@
 
     function screamUno() {
         alert('UNO !');
+        // todo: if opponent clicked on CONTRE UNO, then player picks up 7 cards
     }
 
     function screamContreUno() {
         alert('CONTRE UNO !');
+        // todo: if opponent didn't click UNO, then opponent picks up 7 cards
     }
 
-    function getCardTemplate(card, index, leftIndex) {
+    function getCardTemplate(card, origin, index, leftIndex) {
+
+        if(typeof card === 'undefined')
+            return '';
+
         let colorClass = 'color-';
         switch (card.color) {
             case CardColors.COLOR_RED:
@@ -200,7 +235,16 @@
                 break;
         }
 
-        return '<div class="uno-card elevate" data-id="' + index + '" style="left: '+ leftIndex +'px">' +
+        let cardClass = '';
+        if (origin === 'deck') {
+            leftIndex = '25%';
+        } else {
+            cardClass = 'elevate';
+            leftIndex += 'px';
+        }
+
+        return '<div class="uno-card '+ cardClass + '" ' +
+                    'data-id="' + index + '" data-origin="'+ origin + '" style="left: '+ leftIndex +'">' +
                 '<div class="row ' + colorClass + '">' +
                 '<div class="col-12 small"><div class="type">' + smallCardType + '</div></div> ' +
                 '<div class="col-12"><div class="big type"> ' + bigCardType + '</div></div> ' +
