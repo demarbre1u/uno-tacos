@@ -74,9 +74,8 @@
     }); 
 
     socket.on('roomFull', function(roomId) {
-        console.log(roomId);
-
-        // TODO: afficher un message au joueur indiquant que la room est pleine
+        $('#starting-block').hide();
+        $('#roomFull').show();
     });
 
     socket.on('gameAlreadyOngoing', function(roomId) {
