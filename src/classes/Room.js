@@ -9,6 +9,7 @@ class Room {
         this.owner = owner;
         this.playerList = [];
         this.state = RoomStates.WAITING_FOR_PLAYERS;
+        this.cardsToDraw = 0;
 
         this.turnDirection = TurnStates.TURN_LEFT;
         this.playerTurn = null;
@@ -37,6 +38,21 @@ class Room {
         const cardsToRemove = this.cardHeap.length - 1;
         let removedCards = this.cardHeap.splice(0, cardsToRemove);
         this.cardDeck = CardHelper.shuffleCards(removedCards);
+    }
+
+    // Pioche une carte et l'ajoute à la main d'un joueur
+    drawCardsForPlayer(playerId, cardNumber) {
+        let currentPlayer = this.getPlayer(playerId);
+
+        for(let i = 0; i < cardNumber; i++) {
+            let drawnCard = this.getCardFromDeck();
+            if(! drawnCard) {
+                this.resetCardDeck();
+                drawnCard = this.getCardFromDeck();
+            }
+    
+            currentPlayer.addCard(drawnCard);
+        }
     }
 
     // Ajoute une carte au tas de cartes jouées
@@ -146,6 +162,21 @@ class Room {
         }
 
         return this.playerList[newIndex];
+    }
+
+    // Indique le nombre de cartes qui devra être pioché
+    addCardsToDraw(cardNumber) {
+        this.cardsToDraw += cardNumber;
+    }
+
+    // Récupère le nombre de cartes à piocher 
+    getCardsToDraw() {
+        return this.cardsToDraw;
+    }
+
+    // Réinitialise le nombre de cartes qui devra être pioché
+    resetCardsToDraw() {
+        this.cardsToDraw = 0;
     }
 
     // Renvoie les données de la Room
