@@ -100,6 +100,13 @@ class Room {
         return this.turnDirection;
     }
 
+    // Retourne la dernière carte jouée, ou null s'il n'y en a aucune
+    getLastPlayedCard() {
+        const heapSize = this.cardHeap.length;
+
+        return heapSize ? this.cardHeap[ heapSize - 1 ] : null;
+    }
+
     // Renvoie les données de la Room
     getRoomData() {
         return {

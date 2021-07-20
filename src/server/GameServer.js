@@ -1,7 +1,8 @@
 const Room = require('../classes/Room');
 const Player = require('../classes/Player');
 const RoomStates = require('../enum/RoomStates')
-const TurnStates = require('../enum/TurnStates')
+const TurnStates = require('../enum/TurnStates');
+const CardColors = require('../enum/CardColors');
 
 
 module.exports = function(io) {
@@ -70,6 +71,24 @@ module.exports = function(io) {
             let player = room.getPlayer(playerId);
             // On récupère la carte qui vient d'être jouée
             const cardPlayed = player.getCard(cardId);
+
+            // TODO: on regarde si la carte peut être jouée
+            // On récupère la dernière carte jouée
+            const lastPlayedCard = room.getLastPlayedCard();
+
+            // On regarde si la carte peut être jouée
+            const isHeapEmpty = lastPlayedCard === null;
+            const isSameColor = lastPlayedCard && lastPlayedCard.getColor() === cardPlayed.getColor();
+            const isSameType = lastPlayedCard && lastPlayedCard.getType() === cardPlayed.getType();
+            const isSpecialCard = cardPlayed.getColor() === CardColors.COLOR_SPECIAL;
+            const isCardPlayable = isHeapEmpty || isSameColor || isSameType || isSpecialCard;
+            // Si la carte n'est pas jouable, on ne fait rien
+            if(! isCardPlayable) {
+                return;
+            }
+
+            // TODO: on applique les effets de la carte si elle en a un 
+
             // On retire la carte de la main du joueur
             player.removeCard(cardId);
             // On ajoute la carte joué au tas de cartes
