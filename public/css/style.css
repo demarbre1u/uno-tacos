@@ -1,29 +1,9 @@
-body {
+#home.container {
+    background: url(../../img/tacos.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+
     height: 100vh;
-    overflow: hidden;
-
-    background: radial-gradient(ellipse at top, #fff8a5f2, transparent),
-    radial-gradient(ellipse at bottom, #e60c0c, transparent);
-}
-
-p, span, div {
-    font-family: 'Open Sans', sans-serif;
-}
-
-h1 {
-    font-family: 'Alfa Slab One', cursive;
-    background: -webkit-linear-gradient(#dc3232, #f1be48);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-size: 5rem;
-}
-
-
-.text-center {
-    text-align: center;
-}
-.text-right {
-    text-align: right;
 }
 
 #gamePlay {
@@ -32,6 +12,7 @@ h1 {
 
 #roomCardHeap {
     height: 80%;
+    position: relative;
 }
 
 #uno {
@@ -113,62 +94,10 @@ h1 {
     height:100px;
 }
 
-.color-blue {
-    background: #54a9ff;
-}
-
-.color-red {
-    background: #ff3a28;
-}
-
-.color-yellow {
-    background: #fff43f;
-}
-
-.color-green {
-    background: #40a95a;
-}
-
-.color-black {
-    background: #1d1d1d;
-}
-
-.elevate:hover {
-    top: -60px;
-
-    z-index: 1;
-}
-
 #roomTurn p {
     text-align: center;
-    padding: 5%;
+    padding-top: 5%;
     font-weight: 900;
-    font-size: 2rem;
-}
-
-.shaking:hover {
-    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
-    transform: translate3d(0, 0, 0);
-    backface-visibility: hidden;
-    perspective: 1000px;
-}
-
-@keyframes shake {
-    10%, 90% {
-        transform: translate3d(-1px, 0, 0);
-    }
-
-    20%, 80% {
-        transform: translate3d(2px, 0, 0);
-    }
-
-    30%, 50%, 70% {
-        transform: translate3d(-4px, 0, 0);
-    }
-
-    40%, 60% {
-        transform: translate3d(4px, 0, 0);
-    }
 }
 
 .floating-logo {
@@ -176,10 +105,4 @@ h1 {
     top: 0;
     left: 0;
     width: 100px;
-}
-
-.floating-logo:hover {
-    -webkit-animation: rubberBand 1s infinite;
-    animation: rubberBand 1s infinite;
-    cursor:pointer;
 }

@@ -1,0 +1,12 @@
+.text-center {
+    text-align: center;
+}
+.text-right {
+    text-align: right;
+}
+
+.flex-center {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
