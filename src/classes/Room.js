@@ -17,6 +17,7 @@ class Room {
         this.cardDeck = [];
     }
 
+    // Initialise une partie
     startGame() {
         this.state = RoomStates.GAME_ONGOING;
 
@@ -31,8 +32,21 @@ class Room {
         })
     }
 
+    // Réinitialise le deck de carte
+    resetCardDeck() {
+        const cardsToRemove = this.cardHeap.length - 1;
+        let removedCards = this.cardHeap.splice(0, cardsToRemove);
+        this.cardDeck = CardHelper.shuffleCards(removedCards);
+    }
+
+    // Ajoute une carte au tas de cartes jouées
     addCardToHeap(card) {
         this.cardHeap.push(card);
+    }
+
+    // Vérifie qu'au moins une carte a été jouée
+    hasCardBeenPlayed() {
+        return this.cardHeap.length > 0;
     }
 
     // Retourne l'index d'un joueur au hasard dans la liste des joueurs

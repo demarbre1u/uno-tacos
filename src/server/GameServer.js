@@ -81,9 +81,19 @@ module.exports = function(io) {
             if(playerTurn.getUuid() !== userId) {
                 return;
             }
+
+            // Si rien n'a encore été joué, le joueur ne peut pas piocher
+            if(! room.hasCardBeenPlayed()) {
+                return;
+            }
             
             // On récupère la première carte du paquet de carte, et on l'ajoute à la main du joueur
-            const drawnCard = room.getCardFromDeck();
+            let drawnCard = room.getCardFromDeck();
+            if(! drawnCard) {
+                room.resetCardDeck();
+                drawnCard = room.getCardFromDeck();
+            }
+
             let currentPlayer = room.getPlayer(userId);
             currentPlayer.addCard(drawnCard);
 
@@ -102,7 +112,6 @@ module.exports = function(io) {
             // On récupère la carte qui vient d'être jouée
             const cardPlayed = player.getCard(cardId);
 
-            // TODO: on regarde si la carte peut être jouée
             // On récupère la dernière carte jouée
             const lastPlayedCard = room.getLastPlayedCard();
 
@@ -110,7 +119,7 @@ module.exports = function(io) {
             const isHeapEmpty = lastPlayedCard === null;
             const isSameColor = lastPlayedCard && lastPlayedCard.getColor() === cardPlayed.getColor();
             const isSameType = lastPlayedCard && lastPlayedCard.getType() === cardPlayed.getType();
-            const isSpecialCard = cardPlayed.getColor() === CardColors.COLOR_SPECIAL;
+            const isSpecialCard = cardPlayed.getColor() === CardColors.COLOR_SPECIAL || (lastPlayedCard &&lastPlayedCard.getColor() === CardColors.COLOR_SPECIAL);
             const isCardPlayable = isHeapEmpty || isSameColor || isSameType || isSpecialCard;
             // Si la carte n'est pas jouable, on ne fait rien
             if(! isCardPlayable) {
