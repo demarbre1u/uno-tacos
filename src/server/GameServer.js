@@ -3,6 +3,8 @@ const Player = require('../classes/Player');
 const RoomStates = require('../enum/RoomStates')
 const TurnStates = require('../enum/TurnStates');
 const CardColors = require('../enum/CardColors');
+const CardTypes = require('../enum/CardTypes');
+const Card = require('../classes/Card');
 
 
 module.exports = function(io) {
@@ -81,9 +83,19 @@ module.exports = function(io) {
             if(playerTurn.getUuid() !== userId) {
                 return;
             }
+
+            // Si rien n'a encore été joué, le joueur ne peut pas piocher
+            if(! room.hasCardBeenPlayed()) {
+                return;
+            }
             
             // On récupère la première carte du paquet de carte, et on l'ajoute à la main du joueur
-            const drawnCard = room.getCardFromDeck();
+            let drawnCard = room.getCardFromDeck();
+            if(! drawnCard) {
+                room.resetCardDeck();
+                drawnCard = room.getCardFromDeck();
+            }
+
             let currentPlayer = room.getPlayer(userId);
             currentPlayer.addCard(drawnCard);
 
@@ -102,7 +114,6 @@ module.exports = function(io) {
             // On récupère la carte qui vient d'être jouée
             const cardPlayed = player.getCard(cardId);
 
-            // TODO: on regarde si la carte peut être jouée
             // On récupère la dernière carte jouée
             const lastPlayedCard = room.getLastPlayedCard();
 
@@ -110,7 +121,7 @@ module.exports = function(io) {
             const isHeapEmpty = lastPlayedCard === null;
             const isSameColor = lastPlayedCard && lastPlayedCard.getColor() === cardPlayed.getColor();
             const isSameType = lastPlayedCard && lastPlayedCard.getType() === cardPlayed.getType();
-            const isSpecialCard = cardPlayed.getColor() === CardColors.COLOR_SPECIAL;
+            const isSpecialCard = cardPlayed.getColor() === CardColors.COLOR_SPECIAL || (lastPlayedCard &&lastPlayedCard.getColor() === CardColors.COLOR_SPECIAL);
             const isCardPlayable = isHeapEmpty || isSameColor || isSameType || isSpecialCard;
             // Si la carte n'est pas jouable, on ne fait rien
             if(! isCardPlayable) {
@@ -118,31 +129,31 @@ module.exports = function(io) {
             }
 
             // TODO: on applique les effets de la carte si elle en a un 
+            switch(cardPlayed.getType()) {
+                case CardTypes.TYPE_SKIP:
+                    // On calcule le tour suivant
+                    let nextPlayer = room.getNextPlayerTurn();
+
+                    // Si le joueur suivant ne peut pas jouer, on passe son tour
+                    const canPlay = nextPlayer.getCards().some(card => card.getType() === CardTypes.TYPE_SKIP);
+                    if(! canPlay) {
+                        room.setPlayerTurn(nextPlayer);
+                    }
+                    break;
+                case CardTypes.TYPE_REVERSE:
+                case CardTypes.TYPE_PLUS_2:
+                case CardTypes.TYPE_PLUS_4:
+                case CardTypes.TYPE_COLOR_CHANGE:
+                    break;
+            }
 
             // On retire la carte de la main du joueur
             player.removeCard(cardId);
             // On ajoute la carte joué au tas de cartes
             room.addCardToHeap(cardPlayed);
 
-            const currentTurn = room.getPlayerTurn();
-            const currentTurnIndex = room.getPlayerIndex(currentTurn.getUuid());
-            const playerNumber = room.getNumberOfPlayers();
-            // On calcule l'index du joueur du tour suivant en fonction du sens de rotation des tours
-            let newIndex = currentTurnIndex;
-            switch(room.getTurnDirection()) {
-                case TurnStates.TURN_LEFT: 
-                    newIndex++;
-                    newIndex = newIndex % playerNumber;
-                    break;
-                case TurnStates.TURN_RIGHT: 
-                    newIndex--;
-                    if(newIndex < 0) {
-                        newIndex = playerNumber + newIndex;
-                    }
-                    break;
-            }
-
-            room.setPlayerTurn(newIndex);
+            const newPlayer = room.getNextPlayerTurn();
+            room.setPlayerTurn(newPlayer);
 
             const gameData = room.getRoomData();
             io.to(roomId).emit('gameData', gameData);
