@@ -105,8 +105,8 @@ class Room {
     }
 
     // Change le joueur dont c'est le tour
-    setPlayerTurn(playerIndex) {
-        this.playerTurn = this.playerList[playerIndex];
+    setPlayerTurn(player) {
+        this.playerTurn = player;
     }
 
     // Retourne le sens de rotation des tours
@@ -124,6 +124,28 @@ class Room {
     // Renvoie une carte du deck
     getCardFromDeck() {
         return this.cardDeck.pop();
+    }
+
+    getNextPlayerTurn() {
+        const currentTurn = this.getPlayerTurn();
+        const currentTurnIndex = this.getPlayerIndex(currentTurn.getUuid());
+        const playerNumber = this.getNumberOfPlayers();
+        // On calcule l'index du joueur du tour suivant en fonction du sens de rotation des tours
+        let newIndex = currentTurnIndex;
+        switch(this.getTurnDirection()) {
+            case TurnStates.TURN_LEFT: 
+                newIndex++;
+                newIndex = newIndex % playerNumber;
+                break;
+            case TurnStates.TURN_RIGHT: 
+                newIndex--;
+                if(newIndex < 0) {
+                    newIndex = playerNumber + newIndex;
+                }
+                break;
+        }
+
+        return this.playerList[newIndex];
     }
 
     // Renvoie les données de la Room

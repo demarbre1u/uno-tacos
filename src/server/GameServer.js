@@ -3,6 +3,8 @@ const Player = require('../classes/Player');
 const RoomStates = require('../enum/RoomStates')
 const TurnStates = require('../enum/TurnStates');
 const CardColors = require('../enum/CardColors');
+const CardTypes = require('../enum/CardTypes');
+const Card = require('../classes/Card');
 
 
 module.exports = function(io) {
@@ -127,31 +129,31 @@ module.exports = function(io) {
             }
 
             // TODO: on applique les effets de la carte si elle en a un 
+            switch(cardPlayed.getType()) {
+                case CardTypes.TYPE_SKIP:
+                    // On calcule le tour suivant
+                    let nextPlayer = room.getNextPlayerTurn();
+
+                    // Si le joueur suivant ne peut pas jouer, on passe son tour
+                    const canPlay = nextPlayer.getCards().some(card => card.getType() === CardTypes.TYPE_SKIP);
+                    if(! canPlay) {
+                        room.setPlayerTurn(nextPlayer);
+                    }
+                    break;
+                case CardTypes.TYPE_REVERSE:
+                case CardTypes.TYPE_PLUS_2:
+                case CardTypes.TYPE_PLUS_4:
+                case CardTypes.TYPE_COLOR_CHANGE:
+                    break;
+            }
 
             // On retire la carte de la main du joueur
             player.removeCard(cardId);
             // On ajoute la carte joué au tas de cartes
             room.addCardToHeap(cardPlayed);
 
-            const currentTurn = room.getPlayerTurn();
-            const currentTurnIndex = room.getPlayerIndex(currentTurn.getUuid());
-            const playerNumber = room.getNumberOfPlayers();
-            // On calcule l'index du joueur du tour suivant en fonction du sens de rotation des tours
-            let newIndex = currentTurnIndex;
-            switch(room.getTurnDirection()) {
-                case TurnStates.TURN_LEFT: 
-                    newIndex++;
-                    newIndex = newIndex % playerNumber;
-                    break;
-                case TurnStates.TURN_RIGHT: 
-                    newIndex--;
-                    if(newIndex < 0) {
-                        newIndex = playerNumber + newIndex;
-                    }
-                    break;
-            }
-
-            room.setPlayerTurn(newIndex);
+            const newPlayer = room.getNextPlayerTurn();
+            room.setPlayerTurn(newPlayer);
 
             const gameData = room.getRoomData();
             io.to(roomId).emit('gameData', gameData);
