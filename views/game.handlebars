@@ -81,6 +81,12 @@
         socket.emit('joinRoom', roomId);
     }); 
 
+    socket.on('roomFull', function(roomId) {
+        console.log(roomId);
+
+        // TODO: afficher un message au joueur indiquant que la room est pleine
+    });
+
     socket.on('gameData', function(gameData) {
         var gameState = gameData.roomState;
         var gameOwner = gameData.roomOwner;

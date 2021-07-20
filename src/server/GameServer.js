@@ -8,6 +8,8 @@ module.exports = function(io) {
     // Contient la liste des rooms du serveur 
     let roomList = [];
 
+    const MAX_PLAYER_NUMBER = 4;
+
     // Lorsqu'un jouueur se connecte
     io.on('connection', socket => {
         let player = new Player(socket);
@@ -20,18 +22,20 @@ module.exports = function(io) {
         // Lorsqu'un joueur demande à rejoindre une room
         socket.on('joinRoom', roomId => {
             // On regarde si la room existe déjà
-            const roomExists = roomList.some(room => room.getRoomName() === roomId);
+            let room = roomList.find(room => room.getRoomName() === roomId);
 
-            if(roomExists) {
+            if(room) {
+                // Si la Room est pleine, on n'ajoute pas le joueur
+                if(room.getNumberOfPlayers() >= MAX_PLAYER_NUMBER) {
+                    socket.emit('roomFull', roomId);
+                    return;
+                }
+
                 // Si elle existe, on ajoute le nouveau joueur à la liste des joueurs
-                roomList.forEach(room => {
-                    if(room.getRoomName() === roomId) {
-                        room.addPlayer(player);
-                    }
-                });
+                room.addPlayer(player);
             } else {
                 // Si elle n'existe pas, on crée la nouvelle room
-                let room = new Room(roomId, player.getUuid());
+                room = new Room(roomId, player.getUuid());
                 room.addPlayer(player);
                 roomList.push(room);
             }
@@ -40,7 +44,6 @@ module.exports = function(io) {
             console.log(`The user ${socket.uuid} joined the room ${roomId}`);
 
             // On récupère les infos à jour de la room, et on les envoie à tous les joueurs de la room
-            let room = (roomList.filter(room => room.getRoomName() === roomId)[0]);
             if(room.getNumberOfPlayers() > 1) {
                 room.setRoomState(RoomStates.READY);
             }
