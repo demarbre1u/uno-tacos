@@ -25,25 +25,30 @@
     var base = new Date();
     var countDownDate = base.setSeconds(base.getSeconds() + 10);
 
-    // Update the count down every 1 second
-    var x = setInterval(function() {
+    console.log($('#roomFull')[0].style['display'])
 
-        // Get today's date and time
-        var now = new Date().getTime();
+    if ($('#roomFull')[0].style.display === 'block') {
+        // Update the count down every 1 second
+        var x = setInterval(function() {
 
-        // Find the distance between now and the count down date
-        var distance = countDownDate - now;
+            // Get today's date and time
+            var now = new Date().getTime();
 
-        // Time calculations for days, hours, minutes and seconds
-        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
 
-        // Display the result in the element with id="demo"
-        document.getElementById("secondsLeft").innerHTML = seconds + "s ";
+            // Time calculations for days, hours, minutes and seconds
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        // If the count down is finished, write some text
-        if (distance < 0) {
-            clearInterval(x);
-            window.location.href = 'http://localhost:3000';
-        }
-    }, 1000);
+            // Display the result in the element with id="demo"
+            document.getElementById("secondsLeft").innerHTML = seconds + "s ";
+
+            // If the count down is finished, write some text
+            if (distance < 0) {
+                clearInterval(x);
+                window.location.href = 'http://localhost:3000';
+            }
+        }, 1000);
+    }
+
 </script>

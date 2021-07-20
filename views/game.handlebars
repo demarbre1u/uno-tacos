@@ -66,6 +66,10 @@
         $('#roomCardDeck').on('click', function(event) {
             socket.emit('drawCard', {userId, roomId});
         });
+
+        $(".uno-card.user").mouseenter(() => {
+            console.log('hello')
+        });
     });
 
     socket.on('connected', function(uid) {
@@ -74,8 +78,13 @@
     }); 
 
     socket.on('roomFull', function(roomId) {
-        $('#starting-block').hide();
-        $('#roomFull').show();
+        //$('#starting-block').hide();
+        //$('#starting-block').css({'display': 'none'});
+        $('#starting-block').css({'display': 'none'});
+        $('#roomFull').css({'display': 'block'});
+        //$('#starting-block').style.display = 'none';
+        //$('#roomFull').show();
+        //$('#roomFull').style.display = 'block';
     });
 
     socket.on('gameAlreadyOngoing', function(roomId) {
@@ -107,18 +116,24 @@
                 currentUser = gameData.roomPlayers.find(u => u.uuid === userId);
 
                 // Affiche les cartes de l'utilisateur courrant
-                var html = '';
-                var leftIndex = 0;
+                let html = '', leftIndex = 0, topIndex = 0, zIndex = 2;
                 currentUser.cards.forEach((c, index) => {
-                    html += getCardTemplate(c, 'user', index, leftIndex);
+                    if (index % 8 === 0) {
+                        topIndex -= 100;
+                        leftIndex = 0;
+                        zIndex --;
+                    }
+                    html += getCardTemplate(c, 'user', index, leftIndex, topIndex, zIndex);
                     leftIndex += 140;
                 });
+
+
 
                 $('#ownerCards').html(html);
                 $('#roomCardDeck').show();
 
                 var isUserTurn = gameData.roomPlayerTurn.uuid === userId;
-                // Si c'est le tour de l'utilsiateur courrant, les cartes peuvent être cliquées pour être jouées
+                // Si c'est le tour de l'utilisateur courant, les cartes peuvent être cliquées pour être jouées
                 if(isUserTurn) {
                     $('#roomTurn p').text("C'est votre tour !");
                     $('.spinner').hide();
@@ -197,7 +212,7 @@
         // todo: if opponent didn't click UNO, then opponent picks up 7 cards
     }
 
-    function getCardTemplate(card, origin, index, leftIndex) {
+    function getCardTemplate(card, origin, index, leftIndex, topIndex = 0, zIndex = 0) {
 
         if(typeof card === 'undefined')
             return '';
@@ -237,7 +252,7 @@
                 break;
             case CardTypes.TYPE_COLOR_CHANGE:
                 smallCardType = '<img class="smallImg" src="../../img/card-types/color-change.png" alt=""/>';
-                bigCardType = '<img class="bigImg" src="../../img/card-types/color-change.png alt=""/>';
+                bigCardType = '<img class="bigImg" src="../../img/card-types/color-change.png" alt=""/>';
                 break;
             default:
                 bigCardType = card.type;
@@ -249,12 +264,13 @@
         if (origin === 'deck') {
             leftIndex = '25%';
         } else {
-            cardClass = 'elevate';
+            cardClass = origin;
             leftIndex += 'px';
         }
 
         return '<div class="uno-card '+ cardClass + '" ' +
-                    'data-id="' + index + '" data-origin="'+ origin + '" style="left: '+ leftIndex +'">' +
+                    'data-id="' + index + '" data-origin="'+ origin + '" ' +
+                    'style="left: '+ leftIndex +';top: ' + topIndex +'px;z-index:' + zIndex + ';">' +
                 '<div class="row ' + colorClass + '">' +
                 '<div class="col-12 small"><div class="type">' + smallCardType + '</div></div> ' +
                 '<div class="col-12"><div class="big type"> ' + bigCardType + '</div></div> ' +
