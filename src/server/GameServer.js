@@ -162,11 +162,8 @@ module.exports = function(io) {
             let canPlay;
             switch(cardPlayed.getType()) {
                 case CardTypes.TYPE_SKIP:
-                    // Si le joueur suivant ne peut pas jouer, on passe son tour
-                    canPlay = nextPlayer.getCards().some(card => card.getType() === CardTypes.TYPE_SKIP);
-                    if(! canPlay) {
-                        room.setPlayerTurn(nextPlayer);
-                    }
+                    // On force le joueur à passer son tour
+                    room.setPlayerTurn(nextPlayer);
                     break;
                 case CardTypes.TYPE_PLUS_2:
                     canPlay = nextPlayer.getCards().some(card => card.getType() === CardTypes.TYPE_PLUS_2);
