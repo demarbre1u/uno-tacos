@@ -139,6 +139,11 @@ class Room {
         this.playerTurn = player;
     }
 
+    // Modifie le sens de rotation des tours 
+    setTurnDirection(turnDirection) {
+        this.turnDirection = turnDirection;
+    }
+
     // Retourne le sens de rotation des tours
     getTurnDirection() {
         return this.turnDirection;

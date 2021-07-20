@@ -3,6 +3,7 @@ const Player = require('../classes/Player');
 const RoomStates = require('../enum/RoomStates')
 const CardColors = require('../enum/CardColors');
 const CardTypes = require('../enum/CardTypes');
+const TurnStates = require('../enum/TurnStates');
 
 module.exports = function(io) {
     // Contient la liste des rooms du serveur 
@@ -52,8 +53,6 @@ module.exports = function(io) {
                     default:
                         break;
                 }
-
-                
 
                 // On notifie la room pour tenir les autres joueurs à jour
                 const gameData = room.getRoomData();
@@ -208,7 +207,17 @@ module.exports = function(io) {
                         room.drawCardsForPlayer(nextPlayer.getUuid(), cardsToDraw);
                         room.resetCardsToDraw();
                     }
+                    break;
                 case CardTypes.TYPE_REVERSE:
+                    if(room.getNumberOfPlayers() === 2) {
+                        // S'il n'y a que 2 joueurs, la carte se comporte comme un "Skip"
+                        room.setPlayerTurn(nextPlayer);
+                    } else {
+                        // Sinon, on change la direction des tours
+                        const newTurnDirection = room.getTurnDirection() === TurnStates.TURN_LEFT ? TurnStates.TURN_RIGHT : TurnStates.TURN_LEFT;
+                        room.setTurnDirection(newTurnDirection);
+                    }
+                    break;
                 case CardTypes.TYPE_COLOR_CHANGE:
                     break;
             }
