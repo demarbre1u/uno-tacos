@@ -1,7 +1,8 @@
 const RoomStates = require('../enum/RoomStates');
 const TurnStates = require('../enum/TurnStates');
-
 const CardHelper = require('./CardHelper');
+
+const STARTING_CARDS_PER_HAND = 2;
 
 class Room {
     constructor(name, owner) {
@@ -31,7 +32,7 @@ class Room {
         this.cardDeck = CardHelper.generateCardDeck();
         this.playerList.forEach(player => {
             player.emptyCards();
-            const cards = this.cardDeck.splice(0, 7);
+            const cards = this.cardDeck.splice(0, STARTING_CARDS_PER_HAND);
             cards.forEach(card => player.addCard(card));
         })
     }
