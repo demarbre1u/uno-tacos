@@ -118,6 +118,7 @@
 
         switch(gameState) {
             case RoomStates.WAITING_FOR_PLAYERS: 
+                $('#starting-block').show();
                 $('#starting-block #players').html('');
 
                 var startGameBtn = document.getElementById('start-game-btn');
@@ -125,6 +126,8 @@
 
                 break;
             case RoomStates.READY: 
+                $('#starting-block').show();
+
                 // Affiche le bouton "Start game" s'il y a assez de joueurs, et que l'utilisateur courrant est le propriétaire de la room
                 if(gameOwner === userId) {
                     var startGameBtn = document.getElementById('start-game-btn');

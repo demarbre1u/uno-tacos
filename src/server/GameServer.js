@@ -31,9 +31,29 @@ module.exports = function(io) {
                     room.setOwner(room.pickRandomPlayer().getUuid());
                 }
 
-                if(room.getNumberOfPlayers() < MIN_PLAYER_NUMBER) {
-                    room.setRoomState(RoomStates.WAITING_FOR_PLAYERS);
+                const roomState = room.getRoomState();
+                switch(roomState) {
+                    case RoomStates.READY:
+                        if(room.getNumberOfPlayers() < MIN_PLAYER_NUMBER) {
+                            room.setRoomState(RoomStates.WAITING_FOR_PLAYERS);
+                        }
+
+                        break;
+                    case RoomStates.GAME_ONGOING:
+                        // Si une partie est en court, on l'interrompt
+                        if(room.getNumberOfPlayers() < MIN_PLAYER_NUMBER) {
+                            room.setRoomState(RoomStates.WAITING_FOR_PLAYERS);
+                        } else {
+                            room.setRoomState(RoomStates.READY);
+                        }
+
+                        break;
+                    case RoomStates.WAITING_FOR_PLAYERS:
+                    default:
+                        break;
                 }
+
+                
 
                 // On notifie la room pour tenir les autres joueurs à jour
                 const gameData = room.getRoomData();
