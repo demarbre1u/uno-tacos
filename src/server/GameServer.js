@@ -88,16 +88,14 @@ module.exports = function(io) {
             if(! room.hasCardBeenPlayed()) {
                 return;
             }
+
+            // S'il y a des cartes à piocher, alors on ne peut pas piocher manuellement
+            if(room.getCardsToDraw() > 0) {
+                return;
+            }
             
             // On récupère la première carte du paquet de carte, et on l'ajoute à la main du joueur
-            let drawnCard = room.getCardFromDeck();
-            if(! drawnCard) {
-                room.resetCardDeck();
-                drawnCard = room.getCardFromDeck();
-            }
-
-            let currentPlayer = room.getPlayer(userId);
-            currentPlayer.addCard(drawnCard);
+            room.drawCardsForPlayer(userId, 1);
 
             const gameData = room.getRoomData();
             io.to(roomId).emit('gameData', gameData);
@@ -118,42 +116,71 @@ module.exports = function(io) {
             const lastPlayedCard = room.getLastPlayedCard();
 
             // On regarde si la carte peut être jouée
-            const isHeapEmpty = lastPlayedCard === null;
-            const isSameColor = lastPlayedCard && lastPlayedCard.getColor() === cardPlayed.getColor();
-            const isSameType = lastPlayedCard && lastPlayedCard.getType() === cardPlayed.getType();
-            const isSpecialCard = cardPlayed.getColor() === CardColors.COLOR_SPECIAL || (lastPlayedCard &&lastPlayedCard.getColor() === CardColors.COLOR_SPECIAL);
-            const isCardPlayable = isHeapEmpty || isSameColor || isSameType || isSpecialCard;
+            let isCardPlayable = true;
+            if(room.getCardsToDraw() > 0) {
+                // S'il y a des cartes à piocher, on ne peut que jouer la carte de pioche correspondante
+                const isSameType = lastPlayedCard.getType() === cardPlayed.getType();
+                isCardPlayable = isSameType;
+            } else {
+                const isHeapEmpty = lastPlayedCard === null;
+                const isSameColor = lastPlayedCard && lastPlayedCard.getColor() === cardPlayed.getColor();
+                const isSameType = lastPlayedCard && lastPlayedCard.getType() === cardPlayed.getType();
+                const isSpecialCard = cardPlayed.getColor() === CardColors.COLOR_SPECIAL || (lastPlayedCard &&lastPlayedCard.getColor() === CardColors.COLOR_SPECIAL);
+                isCardPlayable = isHeapEmpty || isSameColor || isSameType || isSpecialCard;
+            }
+            
             // Si la carte n'est pas jouable, on ne fait rien
             if(! isCardPlayable) {
                 return;
             }
 
             // TODO: on applique les effets de la carte si elle en a un 
+            const nextPlayer = room.getNextPlayerTurn();
+            let canPlay;
             switch(cardPlayed.getType()) {
                 case CardTypes.TYPE_SKIP:
-                    // On calcule le tour suivant
-                    let nextPlayer = room.getNextPlayerTurn();
-
                     // Si le joueur suivant ne peut pas jouer, on passe son tour
-                    const canPlay = nextPlayer.getCards().some(card => card.getType() === CardTypes.TYPE_SKIP);
+                    canPlay = nextPlayer.getCards().some(card => card.getType() === CardTypes.TYPE_SKIP);
                     if(! canPlay) {
                         room.setPlayerTurn(nextPlayer);
                     }
                     break;
-                case CardTypes.TYPE_REVERSE:
                 case CardTypes.TYPE_PLUS_2:
+                    canPlay = nextPlayer.getCards().some(card => card.getType() === CardTypes.TYPE_PLUS_2);
+                    // Si le joueur suivant peut jouer, on indique que le joueur suivant devra piocher 2 cartes de plus
+                    room.addCardsToDraw(2);
+
+                    if(! canPlay) {
+                        // Sinon, le joueur doit piocher
+                        let cardsToDraw = room.getCardsToDraw();
+                        room.drawCardsForPlayer(nextPlayer.getUuid(), cardsToDraw);
+                        room.resetCardsToDraw();
+                    }
+                    break;                
                 case CardTypes.TYPE_PLUS_4:
+                    canPlay = nextPlayer.getCards().some(card => card.getType() === CardTypes.TYPE_PLUS_4);
+                    // Si le joueur suivant peut jouer, on indique que le joueur suivant devra piocher 4 cartes de plus
+                    room.addCardsToDraw(4);
+
+                    if(! canPlay) {
+                        // Sinon, le joueur doit piocher
+                        let cardsToDraw = room.getCardsToDraw();
+                        room.drawCardsForPlayer(nextPlayer.getUuid(), cardsToDraw);
+                        room.resetCardsToDraw();
+                    }
+                case CardTypes.TYPE_REVERSE:
                 case CardTypes.TYPE_COLOR_CHANGE:
                     break;
             }
+
+            // On passe au tour suivant
+            const newPlayer = room.getNextPlayerTurn();
+            room.setPlayerTurn(newPlayer);
 
             // On retire la carte de la main du joueur
             player.removeCard(cardId);
             // On ajoute la carte joué au tas de cartes
             room.addCardToHeap(cardPlayed);
-
-            const newPlayer = room.getNextPlayerTurn();
-            room.setPlayerTurn(newPlayer);
 
             const gameData = room.getRoomData();
             io.to(roomId).emit('gameData', gameData);
