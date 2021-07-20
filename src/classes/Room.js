@@ -21,12 +21,16 @@ class Room {
     // Initialise une partie
     startGame() {
         this.state = RoomStates.GAME_ONGOING;
+        this.cardsToDraw = 0;
+        this.turnDirection = TurnStates.TURN_LEFT;
+        this.cardHeap = [];
 
         // On prends un joueur au hasard pour commencer 
         this.playerTurn = this.pickRandomPlayer();
 
         this.cardDeck = CardHelper.generateCardDeck();
         this.playerList.forEach(player => {
+            player.emptyCards();
             const cards = this.cardDeck.splice(0, 7);
             cards.forEach(card => player.addCard(card));
         })

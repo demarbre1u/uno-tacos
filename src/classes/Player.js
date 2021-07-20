@@ -20,6 +20,11 @@ class Player {
         return this.cards[cardId];
     }
 
+    // Vide la main du joueur
+    emptyCards() {
+        this.cards = [];
+    }
+
     // Retire une carte de la main d'un joueur correspondant à un id donné
     removeCard(cardId) {
         this.cards = this.cards.filter((card, index) => index !== cardId);

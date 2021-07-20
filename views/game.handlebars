@@ -96,6 +96,8 @@
             case RoomStates.WAITING_FOR_PLAYERS: 
                 $('#starting-block').show();
                 $('#starting-block #players').html('');
+                $('#ownerCards').html('');
+                $('#gamePlay').hide();
 
                 var startGameBtn = document.getElementById('start-game-btn');
                 startGameBtn.style.display = 'hidden';
@@ -103,6 +105,8 @@
                 break;
             case RoomStates.READY: 
                 $('#starting-block').show();
+                $('#ownerCards').html('');
+                $('#gamePlay').hide();
 
                 // Affiche le bouton "Start game" s'il y a assez de joueurs, et que l'utilisateur courrant est le propriétaire de la room
                 if(gameOwner === userId) {
@@ -114,6 +118,7 @@
 
                 break;
             case RoomStates.GAME_ONGOING:
+                $('#gamePlay').show();
                 $('#starting-block').hide();
                 $('#uno').show();
 
