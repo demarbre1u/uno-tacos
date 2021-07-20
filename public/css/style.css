@@ -108,9 +108,15 @@
     width: 100px;
 }
 
+#template-color-change {
+    position: absolute;
+    left: -15px;
+    height: 100vh;
+}
+
 #color-change-block {
     position: absolute;
-    top: 30%;
+    top: 37%;
     left: 35%;
     z-index: 10;
     height: 35vh;
@@ -122,8 +128,9 @@
     position: absolute;
     height:100vh;
     width: 100vw;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.4);
     z-index:9;
+    top:0;
 }
 
 .ellipse {

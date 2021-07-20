@@ -1,11 +1,16 @@
-<div style="display: none;">
+<div id="template-color-change" style="display: none;">
     <div id="color-change-block" class="row justify-content-center align-content-center p-2 pb-5 gx-2 gy-1">
-        <div class="col-12 flex-center p-4">
+        <div class="col-10 flex-center p-4">
             <p class="fw-bolder">Nouvelle couleur</p>
         </div>
-        <div class="col-6 col-sm-3 col-md-2 col-lg-4 clickable" data-color="blue">
-            <div class="ellipse top-left color-blue"></div>
+        <div class="col-2 flex-center p-4 clickable" id="closeColorChange-btn">
+            <p class="fw-bolder"><i class="ri-close-line"></i></p>
         </div>
+
+            <div class="col-6 col-sm-3 col-md-2 col-lg-4 clickable">
+                <div class="ellipse top-left color-blue"></div>
+            </div>
+
         <div class="col-6 col-sm-3 col-md-2 col-lg-4 clickable" data-color="red">
             <div class="ellipse top-right color-red"></div>
         </div>

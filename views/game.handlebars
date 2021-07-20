@@ -140,19 +140,48 @@
                 $('#ownerCards').html(html);
                 $('#roomCardDeck').show();
 
+                console.log(currentUser.cards.length)
+
                 var isUserTurn = gameData.roomPlayerTurn.uuid === userId;
                 // Si c'est le tour de l'utilisateur courant, les cartes peuvent être cliquées pour être jouées
                 if(isUserTurn) {
+                    let cardId;
                     $('#roomTurn p').text("C'est votre tour !");
                     $('.spinner').hide();
                     $('#ownerCards .uno-card').on('click', function(event) {
-                        var cardId = $(this).data('id');
+                        cardId = $(this).data('id');
+
+                        if (currentUser.cards[cardId].type === CardTypes.TYPE_COLOR_CHANGE) {
+                            $('#template-color-change').fadeIn();
+
+                            $('#closeColorChange-btn').on('click', function(event) {
+                                $('#template-color-change').fadeOut();
+                            });
+                        } else {
+                            socket.emit('playCard', {
+                                roomId: roomId,
+                                playerId: userId,
+                                cardId: cardId,
+                            });
+                        }
+                    });
+
+                    $('#color-change-block .clickable').on('click', function (event) {
+                        console.log({
+                            roomId: roomId,
+                            playerId: userId,
+                            cardId: cardId,
+                            color: $(this).data('color')
+                        })
                         socket.emit('playCard', {
                             roomId: roomId,
-                            playerId: userId, 
-                            cardId: cardId, 
+                            playerId: userId,
+                            cardId: cardId,
+                            color: $(this).data('color')
                         });
+                        $('#template-color-change').fadeOut();
                     });
+
                     if (currentUser.cards.length === 1) {
                         $('#uno-btn').prop('disabled', false);
                     }
@@ -164,6 +193,7 @@
 
                 let lastAddedCard = gameData.roomCardHeap.slice(-1)[0];
                 $('#roomCardHeap').html(getCardTemplate(lastAddedCard, 'deck', 0, 0));
+
 
                 if (gameData.roomPlayers.some(p => p.cards.length === 1))
                     $('#contre-uno-btn').prop('disabled', false);
@@ -303,7 +333,9 @@
         }
 
         return '<div class="uno-card '+ cardClass + '" ' +
-                    'data-id="' + index + '" data-origin="'+ origin + '" ' +
+                    'data-id="' + index + '" ' +
+                    'data-special="' + card.type + '"' +
+                    'data-origin="'+ origin + '" ' +
                     'style="left: '+ leftIndex +';top: ' + topIndex +'px;z-index:' + zIndex + ';">' +
                 '<div class="row ' + colorClass + '">' +
                 '<div class="col-12 small"><div class="type">' + smallCardType + '</div></div> ' +
