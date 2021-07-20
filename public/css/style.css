@@ -4,6 +4,7 @@
     background-repeat: no-repeat;
 
     height: 100vh;
+    background-position: top;
 }
 
 #gamePlay {
@@ -109,10 +110,10 @@
 
 #color-change-block {
     position: absolute;
-    top: 20%;
+    top: 30%;
     left: 35%;
-    z-index:3;
-    height: 50vh;
+    z-index: 3;
+    height: 35vh;
     width: 20vw;
     background: white;
 }
@@ -123,4 +124,30 @@
     width: 100vw;
     background: rgba(0, 0, 0, 0.7);
     z-index:2;
+}
+
+.ellipse {
+    height: 90px;
+    width: 100%;
+}
+
+.ellipse.top-left {
+    -moz-border-radius-topleft: 100%;
+    border-top-left-radius: 100%;
+    -webkit-border-top-left-radius: 100%;
+}
+.ellipse.top-right {
+    -moz-border-radius-topright: 100%;
+    border-top-right-radius: 100%;
+    -webkit-border-top-right-radius: 100%;
+}
+.ellipse.bottom-left {
+    -moz-border-radius-bottomleft: 100%;
+    border-bottom-left-radius: 100%;
+    -webkit-border-bottom-left-radius: 100%;
+}
+.ellipse.bottom-right {
+    -moz-border-radius-bottomright: 100%;
+    border-bottom-right-radius: 100%;
+    -webkit-border-bottom-right-radius: 100%;
 }
