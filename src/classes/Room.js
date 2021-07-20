@@ -107,6 +107,11 @@ class Room {
         return heapSize ? this.cardHeap[ heapSize - 1 ] : null;
     }
 
+    // Renvoie une carte du deck
+    getCardFromDeck() {
+        return this.cardDeck.pop();
+    }
+
     // Renvoie les données de la Room
     getRoomData() {
         return {

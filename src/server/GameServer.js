@@ -26,6 +26,13 @@ module.exports = function(io) {
             let room = roomList.find(room => room.getRoomName() === roomId);
 
             if(room) {
+                // Si la partie est déjà en cours dans la Room, on ne fait rien
+                const isWaitingForPlayers = room.getRoomState() === RoomStates.WAITING_FOR_PLAYERS || room.getRoomState() === RoomStates.READY;
+                if(! isWaitingForPlayers) {
+                    socket.emit('gameAlreadyOngoing', roomId);
+                    return;
+                }
+
                 // Si la Room est pleine, on n'ajoute pas le joueur
                 if(room.getNumberOfPlayers() >= MAX_PLAYER_NUMBER) {
                     socket.emit('roomFull', roomId);
@@ -56,6 +63,29 @@ module.exports = function(io) {
         socket.on('startGame', roomId => {
             let room = roomList.filter(room => room.getRoomName() === roomId)[0];
             room.startGame();
+
+            const gameData = room.getRoomData();
+            io.to(roomId).emit('gameData', gameData);
+        });
+
+        // Lorsqu'un joueur demande de piocher
+        socket.on('drawCard', data => {
+            const {userId, roomId} = data;
+
+            // On récupère la Room dans laquelle se trouve le joueur
+            let room = roomList.find(room => room.getRoomName() === roomId);
+            const playerTurn = room.getPlayerTurn();
+
+            // On vérifie si c'est bien le tour du joueur qui demande à piocher
+            // Dans le cas contraire, on ne fait rien
+            if(playerTurn.getUuid() !== userId) {
+                return;
+            }
+            
+            // On récupère la première carte du paquet de carte, et on l'ajoute à la main du joueur
+            const drawnCard = room.getCardFromDeck();
+            let currentPlayer = room.getPlayer(userId);
+            currentPlayer.addCard(drawnCard);
 
             const gameData = room.getRoomData();
             io.to(roomId).emit('gameData', gameData);

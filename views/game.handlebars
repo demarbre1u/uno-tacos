@@ -76,6 +76,13 @@
 
     var currentUser;
 
+    $(document).ready(function() {
+        // Lorsque le joueur clique sur le tas de carte, il demande au serveur de piocher
+        $('#roomCardDeck').on('click', function(event) {
+            socket.emit('drawCard', {userId, roomId});
+        });
+    });
+
     socket.on('connected', function(uid) {
         userId = uid;
         socket.emit('joinRoom', roomId);
@@ -85,6 +92,12 @@
         console.log(roomId);
 
         // TODO: afficher un message au joueur indiquant que la room est pleine
+    });
+
+    socket.on('gameAlreadyOngoing', function(roomId) {
+        console.log(roomId);
+
+        // TODO: afficher un message au joueur indiquant qu'une partie est déjà en cours
     });
 
     socket.on('gameData', function(gameData) {
