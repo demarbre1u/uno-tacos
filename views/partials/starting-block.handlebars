@@ -1,0 +1,17 @@
+<div class="col-12 col-sm-6 col-md-5 col-lg-5 text-center p-5" id="starting-block">
+    <button id="start-game-btn"
+            type="button"
+            class="btn btn-success btn-lg pulse-btn"
+            style="display: none" onclick="startGame()">Start game</button>
+    <p>Partager le lien de la room</p>
+    <div class="input-group mb-3 share-link">
+        <input type="text" class="form-control" placeholder="Share link"
+               readonly id="roomName"
+               aria-label="Share room link" aria-describedby="copyRoomName-btn">
+        <button class="btn btn-dark" type="button" id="copyRoomName-btn"
+                onclick="copyRoomName()">
+            <i class="ri-file-copy-line"></i>
+        </button>
+    </div>
+    <div id="players" class="small fst-italic"></div>
+</div>
