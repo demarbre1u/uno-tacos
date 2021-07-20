@@ -1,6 +1,9 @@
 {{> floating-logo}}
-<div class="row justify-content-center" id="gamePlay">
+
+<div class="row justify-content-center">
     {{> starting-block}}
+</div>
+<div class="row justify-content-center" id="gamePlay">
     <div class="col-8" id="roomTurn">
         <div class="row justify-content-start align-content-center" style="height:100px">
             <div class="col-3">
@@ -11,18 +14,6 @@
             <div class="col-3 flex-center">
                 <p class="w-100"></p>
             </div>
-        </div>
-        <div id="uno" style="display: none;">
-            <button id="uno-btn"
-                    type="button"
-                    disabled="disabled"
-                    class="btn btn-success btn-lg"
-                    onclick="screamUno()">UNO !</button>
-            <button id="contre-uno-btn"
-                    type="button"
-                    disabled="disabled"
-                    class="btn btn-warning btn-lg"
-                    onclick="screamContreUno()">CONTRE UNO !</button>
         </div>
     </div>
     <div class="col-8" id="roomCardHeap"></div>
@@ -39,8 +30,18 @@
                 <div class="col-12 small text-right"><div class="type"></div></div>
             </div>
         </div>
-
-
+        <div id="uno" style="display: none;">
+            <button id="uno-btn"
+                    type="button"
+                    disabled="disabled"
+                    class="btn btn-success btn-lg"
+                    onclick="screamUno()">UNO !</button>
+            <button id="contre-uno-btn"
+                    type="button"
+                    disabled="disabled"
+                    class="btn btn-warning btn-lg"
+                    onclick="screamContreUno()">CONTRE UNO !</button>
+        </div>
     </div>
     <div class="col-12" id="ownerCards"></div>
 </div>
@@ -63,7 +64,7 @@
 
     $(document).ready(function() {
         // Lorsque le joueur clique sur le tas de carte, il demande au serveur de piocher
-        $('#roomCardDeck').on('click', function(event) {
+        $('#roomCardDeck .uno-card').on('click', function(event) {
             socket.emit('drawCard', {userId, roomId});
         });
 
@@ -78,36 +79,11 @@
     }); 
 
     socket.on('roomFull', function(roomId) {
-        $('#starting-block').hide();
-        $('#roomFull').show();
-
-        let base = new Date(), countDownDate = base.setSeconds(base.getSeconds() + 10);
-        var x = setInterval(function() {
-
-            // Get today's date and time
-            var now = new Date().getTime();
-
-            // Find the distance between now and the count down date
-            var distance = countDownDate - now;
-
-            // Time calculations for days, hours, minutes and seconds
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Display the result in the element with id="demo"
-            document.getElementById("secondsLeft").innerHTML = seconds + "s ";
-
-            // If the count down is finished, write some text
-            if (distance < 0) {
-                clearInterval(x);
-                window.location.href = 'http://localhost:3000';
-            }
-        }, 1000);
+        redirectUser('full');
     });
 
     socket.on('gameAlreadyOngoing', function(roomId) {
-        console.log(roomId);
-
-        // TODO: afficher un message au joueur indiquant qu'une partie est déjà en cours
+        redirectUser('ongoing');
     });
 
     socket.on('gameData', function(gameData) {
@@ -139,13 +115,15 @@
                 break;
             case RoomStates.GAME_ONGOING:
                 $('#starting-block').hide();
+                $('#uno').show();
 
                 currentUser = gameData.roomPlayers.find(u => u.uuid === userId);
 
                 // Affiche les cartes de l'utilisateur courrant
-                let html = '', leftIndex = 0, topIndex = 0, zIndex = 2;
+                let html = '', leftIndex = 0, topIndex = 0, zIndex = 5;
                 currentUser.cards.forEach((c, index) => {
-                    if (index % 8 === 0) {
+                    let modulo = index % 8;
+                    if (modulo === 0 && index > 0) {
                         topIndex -= 100;
                         leftIndex = 0;
                         zIndex --;
@@ -170,7 +148,6 @@
                             cardId: cardId, 
                         });
                     });
-
                     if (currentUser.cards.length === 1) {
                         $('#uno-btn').prop('disabled', false);
                     }
@@ -191,6 +168,33 @@
 
         $('#roomName').val('http://localhost:3000/game/' + gameData.roomName);
     });
+
+    function redirectUser(type) {
+        $('#starting-block').hide();
+        $('#roomFull').show();
+        $("#roomFull #type").text(type === 'ongoing' ? 'a déjà commencé' : 'est déjà complète (max 4 joueurs)');
+
+        let base = new Date(), countDownDate = base.setSeconds(base.getSeconds() + 10);
+        var x = setInterval(function() {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result in the element with id="demo"
+            $("#secondsLeft").text(seconds + "s ");
+            // If the count down is finished, write some text
+            if (distance < 0) {
+                clearInterval(x);
+                window.location.href = 'http://localhost:3000';
+            }
+        }, 1000);
+    }
 
     function startGame() {
         socket.emit('startGame', roomId);
