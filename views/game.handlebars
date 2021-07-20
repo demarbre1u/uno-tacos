@@ -78,13 +78,30 @@
     }); 
 
     socket.on('roomFull', function(roomId) {
-        //$('#starting-block').hide();
-        //$('#starting-block').css({'display': 'none'});
-        $('#starting-block').css({'display': 'none'});
-        $('#roomFull').css({'display': 'block'});
-        //$('#starting-block').style.display = 'none';
-        //$('#roomFull').show();
-        //$('#roomFull').style.display = 'block';
+        $('#starting-block').hide();
+        $('#roomFull').show();
+
+        let base = new Date(), countDownDate = base.setSeconds(base.getSeconds() + 10);
+        var x = setInterval(function() {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result in the element with id="demo"
+            document.getElementById("secondsLeft").innerHTML = seconds + "s ";
+
+            // If the count down is finished, write some text
+            if (distance < 0) {
+                clearInterval(x);
+                window.location.href = 'http://localhost:3000';
+            }
+        }, 1000);
     });
 
     socket.on('gameAlreadyOngoing', function(roomId) {
@@ -126,8 +143,6 @@
                     html += getCardTemplate(c, 'user', index, leftIndex, topIndex, zIndex);
                     leftIndex += 140;
                 });
-
-
 
                 $('#ownerCards').html(html);
                 $('#roomCardDeck').show();
