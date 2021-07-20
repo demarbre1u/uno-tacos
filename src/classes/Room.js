@@ -23,8 +23,7 @@ class Room {
         this.state = RoomStates.GAME_ONGOING;
 
         // On prends un joueur au hasard pour commencer 
-        const randomIndex = this.pickRandomPlayer();
-        this.playerTurn = this.playerList[randomIndex];
+        this.playerTurn = this.pickRandomPlayer();
 
         this.cardDeck = CardHelper.generateCardDeck();
         this.playerList.forEach(player => {
@@ -67,7 +66,8 @@ class Room {
 
     // Retourne l'index d'un joueur au hasard dans la liste des joueurs
     pickRandomPlayer() {
-        return Math.floor(Math.random() * this.playerList.length);
+        const randomIndex = Math.floor(Math.random() * this.playerList.length);
+        return this.playerList[randomIndex];
     }
 
     // Renvoie le nom de la room
@@ -98,6 +98,16 @@ class Room {
     // Ajoute un joueur à la liste des joueurs de la room
     addPlayer(playerName) {
         this.playerList.push(playerName);
+    }
+
+    // Retire un joueur de la liste des joueurs
+    removePlayer(playerUuid) {
+        this.playerList = this.playerList.filter(player => player.getUuid() !== playerUuid);
+    }
+
+    // Modifie le propriétaire de la room
+    setOwner(playerUuid) {
+        this.owner = playerUuid;
     }
 
     // Retourne le nombre de joueurs dans la Room

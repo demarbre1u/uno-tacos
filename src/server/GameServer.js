@@ -1,17 +1,15 @@
 const Room = require('../classes/Room');
 const Player = require('../classes/Player');
 const RoomStates = require('../enum/RoomStates')
-const TurnStates = require('../enum/TurnStates');
 const CardColors = require('../enum/CardColors');
 const CardTypes = require('../enum/CardTypes');
-const Card = require('../classes/Card');
-
 
 module.exports = function(io) {
     // Contient la liste des rooms du serveur 
     let roomList = [];
 
     const MAX_PLAYER_NUMBER = 4;
+    const MIN_PLAYER_NUMBER = 2;
 
     // Lorsqu'un jouueur se connecte
     io.on('connection', socket => {
@@ -19,6 +17,31 @@ module.exports = function(io) {
 
         // On indique au joueur qu'il est bien connecté, et on lui donne son uuid
         socket.emit('connected', socket.uuid);
+
+        // Lorsqu'un joueur se déconnecte
+        socket.on('disconnect', () => {
+            console.log(`${player.getUuid()} disconnected`);
+
+            // On parcourt toutes les rooms
+            roomList.forEach(room => {
+                room.removePlayer(player.getUuid());
+
+                // Si le propriétaire de la Room s'en va et qu'il reste des joueurs, on change de propriétaire
+                if(room.isOwnedBy(player.getUuid()) && room.getNumberOfPlayers() > 0) {
+                    room.setOwner(room.pickRandomPlayer().getUuid());
+                }
+
+                if(room.getNumberOfPlayers() < MIN_PLAYER_NUMBER) {
+                    room.setRoomState(RoomStates.WAITING_FOR_PLAYERS);
+                }
+
+                // On notifie la room pour tenir les autres joueurs à jour
+                const gameData = room.getRoomData();
+                io.to(room.getRoomName()).emit('gameData', gameData);
+            });
+
+            roomList = roomList.filter(room => room.getNumberOfPlayers() !== 0);            
+        });
 
         console.log(`The user ${socket.uuid} user logged in`);
 
@@ -54,7 +77,7 @@ module.exports = function(io) {
             console.log(`The user ${socket.uuid} joined the room ${roomId}`);
 
             // On récupère les infos à jour de la room, et on les envoie à tous les joueurs de la room
-            if(room.getNumberOfPlayers() > 1) {
+            if(room.getNumberOfPlayers() >= MIN_PLAYER_NUMBER) {
                 room.setRoomState(RoomStates.READY);
             }
 
