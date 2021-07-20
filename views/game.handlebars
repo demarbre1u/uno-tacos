@@ -1,33 +1,28 @@
-<div class="floating-logo shaking" data-bs-toggle="tooltip" data-bs-placement="bottom"
-     title='Github: Uno-tacos'>
-    <img src="../../img/hat.png" class="img-fluid"/>
-</div>
-
+{{> floating-logo}}
 <div class="row justify-content-center" id="gamePlay">
-    <div class="col-12 col-sm-6 col-md-5 col-lg-5 text-center p-5" id="roomInfo">
-        <button id="start-game-btn"
-                type="button"
-                class="btn btn-success btn-lg pulse-btn"
-                style="display: none" onclick="startGame()">Start game</button>
-        <p>Partager le lien de la room</p>
-        <div class="input-group mb-3 share-link">
-            <input type="text" class="form-control" placeholder="Share link"
-                   readonly id="roomName"
-                   aria-label="Share room link" aria-describedby="button-addon2">
-            <button class="btn btn-dark" type="button" id="button-addon2"
-                    onclick="copyRoomName()">
-                <i class="ri-file-copy-line"></i>
-            </button>
-        </div>
-        <div class="alert alert-success" role="alert" style="display:none;" id="successful-copy">
-            Copied!
-        </div>
-        <div id="players" class="small fst-italic"></div>
-    </div>
+    {{> starting-block}}
     <div class="col-8" id="roomTurn">
-        <p class="w-100"></p>
-        <div class="w-100 spinner" style="display: none;">
-            {{> spinner}}
+        <div class="row justify-content-start align-content-center" style="height:100px">
+            <div class="col-3">
+                <div class="w-100 spinner" style="display: none;">
+                    {{> spinner}}
+                </div>
+            </div>
+            <div class="col-3 flex-center">
+                <p class="w-100"></p>
+            </div>
+        </div>
+        <div id="uno" style="display: none;">
+            <button id="uno-btn"
+                    type="button"
+                    disabled="disabled"
+                    class="btn btn-success btn-lg"
+                    onclick="screamUno()">UNO !</button>
+            <button id="contre-uno-btn"
+                    type="button"
+                    disabled="disabled"
+                    class="btn btn-warning btn-lg"
+                    onclick="screamContreUno()">CONTRE UNO !</button>
         </div>
     </div>
     <div class="col-8" id="roomCardHeap"></div>
@@ -43,18 +38,7 @@
                 <div class="col-12 small text-right"><div class="type"></div></div>
             </div>
         </div>
-        <div id="uno">
-            <button id="uno-btn"
-                    type="button"
-                    disabled="disabled"
-                    class="btn btn-success btn-lg"
-                    onclick="screamUno()">UNO !</button>
-            <button id="contre-uno-btn"
-                    type="button"
-                    disabled="disabled"
-                    class="btn btn-warning btn-lg"
-                    onclick="screamContreUno()">CONTRE UNO !</button>
-        </div>
+
 
     </div>
     <div class="col-12" id="ownerCards"></div>
@@ -114,11 +98,11 @@
                     startGameBtn.style.display = 'block';
                 }
 
-                $('#roomInfo #players').html(gameData.roomPlayers.length + ' joueurs ont rejoint la room');
+                $('#starting-block #players').html(gameData.roomPlayers.length + ' joueurs ont rejoint la room');
 
                 break;
             case RoomStates.GAME_ONGOING:
-                $('#roomInfo').hide();
+                $('#starting-block').hide();
 
                 currentUser = gameData.roomPlayers.find(u => u.uuid === userId);
 
@@ -136,7 +120,7 @@
                 var isUserTurn = gameData.roomPlayerTurn.uuid === userId;
                 // Si c'est le tour de l'utilsiateur courrant, les cartes peuvent être cliquées pour être jouées
                 if(isUserTurn) {
-                    $('#roomTurn p').text('It is your turn!');
+                    $('#roomTurn p').text("C'est votre tour !");
                     $('.spinner').hide();
                     $('#ownerCards .uno-card').on('click', function(event) {
                         var cardId = $(this).data('id');
@@ -152,7 +136,7 @@
                     }
                 }
                 else {
-                    $('#roomTurn p').empty();
+                    $('#roomTurn p').text("C'est au tour de " + gameData.roomPlayerTurn.username);
                     $('.spinner').show();
                 }
 
@@ -181,9 +165,16 @@
 
         try {
             document.execCommand('copy');
-            $('#successful-copy').show('slow').delay(3000).hide('slow');
+            var tooltip = bootstrap.Tooltip.getOrCreateInstance($('#copyRoomName-btn'), {
+                trigger: 'manual',
+                title: 'Lien copié!',
+                animation: true
+            });
+            tooltip.show();
+            setTimeout(function () {tooltip.hide()}, 3000);
         } catch (err) {
-            console.log('Oops, unable to copy');
+            console.error(err)
+            console.error('Oops, unable to copy');
         }
     }
 
