@@ -103,7 +103,7 @@
 
                 var table = '';
                 gameData.roomPlayers.forEach(u => {
-                    table += getPlayerTurnTemplate(u, gameData.roomPlayerTurn.uuid === u.uuid, );
+                    table += getPlayerTurnTemplate(u, gameData.roomPlayerTurn.uuid === u.uuid);
                 });
                 $('#otherPlayers tbody').html(table);
 
@@ -249,15 +249,6 @@
         }
     }
 
-    function chooseCard(event) {
-        console.log(event)
-        // todo: choose card from player cards and add it game deck
-    }
-
-    function pickUpCards() {
-        // todo: pickup random card from deck and add it to player cards
-    }
-
     function screamUno() {
         alert('UNO !');
         // todo: if opponent clicked on CONTRE UNO, then player picks up 7 cards
@@ -269,12 +260,12 @@
     }
 
     function getPlayerTurnTemplate(user, theirTurn = false) {
-       return   '<tr>' +
-                '<td class="text-center">' +
-                (theirTurn ? '<img src="../../img/hat.png" class="img-fluid" style="width:70px;height:auto;" alt="YourTurn"/>' : '') +
-                '</td>' +
-                '<td class="text-center ' + (theirTurn ? 'fw-bold' : '') +'">' + user.username +'</td>' +
-                '</tr>';
+        let isItMe = user.uuid === userId;
+        return   '<tr style="height: 50px !important;">' +
+                '<td class="text-center" style="height: 50px !important;">'+ (theirTurn ?
+                        ' <img src="../../img/hat.png" class="img-fluid" style="width:auto;height:50px;" alt="YourTurn"/>'
+                        : '') + '</td>' +
+                '<td class="text-center ' + (isItMe ? 'fw-bold' : '') + '" style="height: 45px !important;">' + user.username +'</td>' + '</tr>';
     }
 
     function getCardTemplate(card, origin, index, leftIndex, topIndex = 0, zIndex = 0) {
