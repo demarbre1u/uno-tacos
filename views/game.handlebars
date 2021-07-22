@@ -1,5 +1,4 @@
 {{> floating-logo}}
-
 <div class="row justify-content-center">
     {{> starting-block}}
 </div>
@@ -17,33 +16,7 @@
                 </table>
             </div>
         </div>
-        <div class="row justify-content-start align-content-center position-relative" id="roomCardDeck">
-            <div class="col-12 flex-center">
-                <div class="uno-card shaking position-relative">
-                    <div class="row color-black">
-                        <div class="col-12 small"><div class="type"></div></div>
-                        <div class="col-12">
-                            <div class="big type">
-                                <img src="../../img/hat.png" class="smallImg" alt="Card deck"/>
-                            </div>
-                        </div>
-                        <div class="col-12 small text-right"><div class="type"></div></div>
-                    </div>
-                </div>
-            </div>
-            <div id="uno" style="display: none;" class="col-12">
-                <button id="uno-btn"
-                        type="button"
-                        disabled="disabled"
-                        class="btn btn-success btn-lg"
-                        onclick="screamUno()">UNO !</button>
-                <button id="contre-uno-btn"
-                        type="button"
-                        disabled="disabled"
-                        class="btn btn-warning btn-lg"
-                        onclick="screamContreUno()">CONTRE UNO !</button>
-            </div>
-        </div>
+        {{> card-deck}}
     </div>
     <div class="col-12" id="ownerCards"></div>
 </div>
@@ -137,7 +110,7 @@
                 // Affiche les cartes de l'utilisateur courrant
                 let html = '', leftIndex = 0, topIndex = 0, zIndex = 5;
                 currentUser.cards.forEach((c, index) => {
-                    let modulo = index % 8;
+                    let modulo = index % 7;
                     if (modulo === 0 && index > 0) {
                         topIndex -= 100;
                         leftIndex = 0;
@@ -149,8 +122,6 @@
 
                 $('#ownerCards').html(html);
                 $('#roomCardDeck').show();
-
-                console.log(currentUser.cards.length)
 
                 var isUserTurn = gameData.roomPlayerTurn.uuid === userId;
                 // Si c'est le tour de l'utilisateur courant, les cartes peuvent être cliquées pour être jouées
@@ -206,18 +177,18 @@
 
                         return false;
                     });
-
-                    if (currentUser.cards.length === 1) {
-                        $('#uno-btn').prop('disabled', false);
-                    }
                 }
 
                 let lastAddedCard = gameData.roomCardHeap.slice(-1)[0];
                 $('#roomCardHeap').html(getCardTemplate(lastAddedCard, 'deck', 0, 0));
 
-
-                if (gameData.roomPlayers.some(p => p.cards.length === 1))
+                if (gameData.roomPlayers.some(p => p.cards.length === 1)) {
                     $('#contre-uno-btn').prop('disabled', false);
+                }
+
+                if (currentUser.cards.length === 1) {
+                    $('#uno-btn').prop('disabled', false);
+                }
 
                 break;
         }

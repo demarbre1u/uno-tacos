@@ -10,10 +10,15 @@ p, span, div {
     font-family: 'Open Sans', sans-serif;
 }
 
-h1 {
+h1, h2 {
     font-family: 'Alfa Slab One', cursive;
     background: -webkit-linear-gradient(#dc3232, #f1be48);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+
+    display: block;
+}
+
+h1 {
     font-size: 5rem;
 }
