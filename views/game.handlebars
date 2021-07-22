@@ -165,6 +165,32 @@
                             $('#closeColorChange-btn').on('click', function(event) {
                                 $('#template-color-change').fadeOut();
                             });
+
+                            $('#color-change-block .clickable').on('click', function (event) {
+                                let color;
+                                switch ($(this).data('color')) {
+                                    case "red": color = CardColors.COLOR_RED; break;
+                                    case "blue": color = CardColors.COLOR_BLUE; break;
+                                    case "green": color = CardColors.COLOR_GREEN; break;
+                                    case "yellow": color = CardColors.COLOR_YELLOW; break;
+                                    default: break;
+                                }
+                                console.log({
+                                    roomId: roomId,
+                                    playerId: userId,
+                                    cardId: cardId,
+                                    color: color
+                                })
+                                socket.emit('playCard', {
+                                    roomId: roomId,
+                                    playerId: userId,
+                                    cardId: cardId,
+                                    color: color
+                                });
+                                $('#template-color-change').fadeOut();
+
+                                return false;
+                            });
                         } else {
                             socket.emit('playCard', {
                                 roomId: roomId,
@@ -172,31 +198,6 @@
                                 cardId: cardId,
                             });
                         }
-                    });
-
-                    $('#color-change-block .clickable').on('click', function (event) {
-
-                        let color;
-                        switch ($(this).data('color')) {
-                            case "red": color = CardColors.COLOR_RED; break;
-                            case "blue": color = CardColors.COLOR_BLUE; break;
-                            case "green": color = CardColors.COLOR_GREEN; break;
-                            case "yellow": color = CardColors.COLOR_YELLOW; break;
-                            default: break;
-                        }
-                        console.log({
-                            roomId: roomId,
-                            playerId: userId,
-                            cardId: cardId,
-                            color: color
-                        })
-                        socket.emit('playCard', {
-                            roomId: roomId,
-                            playerId: userId,
-                            cardId: cardId,
-                            color: color
-                        });
-                        $('#template-color-change').fadeOut();
                     });
 
                     if (currentUser.cards.length === 1) {
