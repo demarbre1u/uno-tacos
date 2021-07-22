@@ -4,7 +4,7 @@ const RoomStates = require('../enum/RoomStates');
 const TurnStates = require('../enum/TurnStates');
 const CardHelper = require('./CardHelper');
 
-const STARTING_CARDS_PER_HAND = 7;
+const STARTING_CARDS_PER_HAND = 1;
 
 class Room {
     constructor(name, owner) {
@@ -128,6 +128,15 @@ class Room {
         this.owner = playerUuid;
     }
 
+    // Retourne le nombre de joueurs dans la Room en train de jouer
+    getNumberOfPlayersInGame() {
+        const playerNumbers = this.playerList.filter(player => player.getPlace() === 0).length;
+        
+        console.log(playerNumbers)
+
+        return playerNumbers;
+    }
+
     // Retourne le nombre de joueurs dans la Room
     getNumberOfPlayers() {
         return this.playerList.length;
@@ -181,20 +190,25 @@ class Room {
         const playerNumber = this.getNumberOfPlayers();
         // On calcule l'index du joueur du tour suivant en fonction du sens de rotation des tours
         let newIndex = currentTurnIndex;
-        switch(this.getTurnDirection()) {
-            case TurnStates.TURN_LEFT: 
-                newIndex++;
-                newIndex = newIndex % playerNumber;
-                break;
-            case TurnStates.TURN_RIGHT: 
-                newIndex--;
-                if(newIndex < 0) {
-                    newIndex = playerNumber + newIndex;
-                }
-                break;
-        }
+        let player;
+        do {
+            switch(this.getTurnDirection()) {
+                case TurnStates.TURN_LEFT: 
+                    newIndex++;
+                    newIndex = newIndex % playerNumber;
+                    break;
+                case TurnStates.TURN_RIGHT: 
+                    newIndex--;
+                    if(newIndex < 0) {
+                        newIndex = playerNumber + newIndex;
+                    }
+                    break;
+            }
 
-        return this.playerList[newIndex];
+            player = this.playerList[newIndex];
+        } while (player.getPlace() !== 0);
+        
+        return player;
     }
 
     // Indique le nombre de cartes qui devra être pioché
@@ -210,6 +224,19 @@ class Room {
     // Réinitialise le nombre de cartes qui devra être pioché
     resetCardsToDraw() {
         this.cardsToDraw = 0;
+    }
+
+    // Indique si la partie est finie 
+    isGameOver() {
+        // S'il reste plus d'un joueur en jeu, la partie n'est pas finie
+        if(this.getNumberOfPlayersInGame() > 1) {
+            return false;
+        } 
+
+        let lastPlayer = this.playerList.find(player => player.getPlace() === 0);
+        lastPlayer.setPlace( this.getNumberOfPlayers() );
+
+        return true;
     }
 
     // Renvoie les données de la Room

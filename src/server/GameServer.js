@@ -214,7 +214,7 @@ module.exports = function(io) {
                     }
                     break;
                 case CardTypes.TYPE_REVERSE:
-                    if(room.getNumberOfPlayers() === 2) {
+                    if(room.getNumberOfPlayersInGame() === 2) {
                         // S'il n'y a que 2 joueurs, la carte se comporte comme un "Skip"
                         room.setPlayerTurn(nextPlayer);
                     } else {
@@ -222,8 +222,6 @@ module.exports = function(io) {
                         const newTurnDirection = room.getTurnDirection() === TurnStates.TURN_LEFT ? TurnStates.TURN_RIGHT : TurnStates.TURN_LEFT;
                         room.setTurnDirection(newTurnDirection);
                     }
-                    break;
-                case CardTypes.TYPE_COLOR_CHANGE:
                     break;
             }
 
@@ -235,6 +233,19 @@ module.exports = function(io) {
             player.removeCard(cardId);
             // On ajoute la carte joué au tas de cartes
             room.addCardToHeap(cardPlayed);
+
+            // On regarde si le joueur a gagné
+            if(player.hasPlayerWon()) {
+                const place = room.getNumberOfPlayers() - room.getNumberOfPlayersInGame() + 1;
+                // S'il y a gagné, on lui donne sa position dans la partie
+                player.setPlace(place);
+            }
+
+            // On regarde si la partie est finie
+            if(room.isGameOver()) {
+                // Si elle est finie, on change l'état de la partie
+                room.setRoomState(RoomStates.GAME_OVER);
+            }
 
             const gameData = room.getRoomData();
             io.to(roomId).emit('gameData', gameData);

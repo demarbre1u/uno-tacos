@@ -8,6 +8,7 @@ class Player {
         this.uuid = uuid;
         this.username = `user#${this.uuid}`;
         this.cards = [];
+        this.place = 0;
     }
 
     // Ajoute une carte aux cartes d'un joueur
@@ -43,6 +44,22 @@ class Player {
     // Retourne le nom d'utilsiateur du joueur
     getUsername() {
         return this.username;
+    }
+
+    // Indique si un joueur a gagné ou non
+    hasPlayerWon() {
+        console.log(this.cards)
+        return this.cards.length === 0;
+    }
+
+    // Change la place du joueur dans la partie
+    setPlace(place) {
+        this.place = place;
+    }
+
+    // Retourne la place du joueur dans la partie
+    getPlace() {
+        return this.place;
     }
 }
 
