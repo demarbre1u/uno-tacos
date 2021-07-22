@@ -163,6 +163,11 @@ module.exports = function(io) {
                 // S'il y a des cartes à piocher, on ne peut que jouer la carte de pioche correspondante
                 const isSameType = lastPlayedCard.getType() === cardPlayed.getType();
                 isCardPlayable = isSameType;
+            } else if(cardPlayed.getType() === CardTypes.TYPE_COLOR_CHANGE) {
+                // On change la couleur de la carte
+                cardPlayed.setColor(cardPlayedData.color);
+                // La carte "Color change" est forcément jouable
+                isCardPlayable = true;
             } else {
                 const isHeapEmpty = lastPlayedCard === null;
                 const isSameColor = lastPlayedCard && lastPlayedCard.getColor() === cardPlayed.getColor();

@@ -156,7 +156,10 @@
                 // Si c'est le tour de l'utilisateur courant, les cartes peuvent être cliquées pour être jouées
                 if(isUserTurn) {
                     let cardId;
+                    $('#ownerCards .uno-card').off('click');
                     $('#ownerCards .uno-card').on('click', function(event) {
+                        event.stopPropagation();
+                        
                         cardId = $(this).data('id');
 
                         if (currentUser.cards[cardId].type === CardTypes.TYPE_COLOR_CHANGE) {
