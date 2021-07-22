@@ -41,7 +41,7 @@
 
 #roomCardDeck .uno-card .big.type img {
     position: absolute;
-    opacity: 0.5;
+    opacity: 1;
     width: 90%;
     height: auto;
 }
