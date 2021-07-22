@@ -28,6 +28,11 @@ class Room {
         this.turnDirection = TurnStates.TURN_LEFT;
         this.cardHeap = [];
 
+        this.playerList.map(player => {
+            player.setPlace(0);
+            return player;
+        });
+
         // On prends un joueur au hasard pour commencer 
         this.playerTurn = this.pickRandomPlayer();
 

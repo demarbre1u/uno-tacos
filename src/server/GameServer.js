@@ -40,8 +40,9 @@ module.exports = function(io) {
                         }
 
                         break;
+                    case RoomStates.GAME_OVER:
                     case RoomStates.GAME_ONGOING:
-                        // Si une partie est en court, on l'interrompt
+                        // Si une partie est en cours, on l'interrompt
                         if(room.getNumberOfPlayers() < MIN_PLAYER_NUMBER) {
                             room.setRoomState(RoomStates.WAITING_FOR_PLAYERS);
                         } else {
