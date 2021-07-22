@@ -4,43 +4,45 @@
     {{> starting-block}}
 </div>
 <div class="row justify-content-center" id="gamePlay">
-    <div class="col-8" id="roomTurn">
-        <div class="row justify-content-start align-content-center" style="height:100px">
-            <div class="col-3">
-                <div class="w-100 spinner" style="display: none;">
-                    {{> spinner}}
-                </div>
-            </div>
-            <div class="col-3 flex-center">
-                <p class="w-100"></p>
+    {{> color-change}}
+    <div class="col-8" id="roomCardHeap"></div>
+    <div class="col-4" id="rightSidebar">
+        <div class="row justify-content-start align-content-center position-relative" style="height:200px" id="roomTurn">
+            <div class="table-responsive">
+                <table id="otherPlayers"
+                       class="table table-bordered table-sm
+                       table-striped table-hover table-light caption-top align-middle">
+                    <caption class="small"></caption>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
-    </div>
-    <div class="col-8" id="roomCardHeap"></div>
-    {{> color-change}}
-    <div class="col-3" id="roomCardDeck">
-        <div class="uno-card shaking">
-            <div class="row color-black">
-                <div class="col-12 small"><div class="type"></div></div>
-                <div class="col-12">
-                    <div class="big type">
-                        <img src="../../img/hat.png" class="smallImg" alt="Card deck"/>
+        <div class="row justify-content-start align-content-center position-relative" id="roomCardDeck">
+            <div class="col-12 flex-center">
+                <div class="uno-card shaking position-relative">
+                    <div class="row color-black">
+                        <div class="col-12 small"><div class="type"></div></div>
+                        <div class="col-12">
+                            <div class="big type">
+                                <img src="../../img/hat.png" class="smallImg" alt="Card deck"/>
+                            </div>
+                        </div>
+                        <div class="col-12 small text-right"><div class="type"></div></div>
                     </div>
                 </div>
-                <div class="col-12 small text-right"><div class="type"></div></div>
             </div>
-        </div>
-        <div id="uno" style="display: none;">
-            <button id="uno-btn"
-                    type="button"
-                    disabled="disabled"
-                    class="btn btn-success btn-lg"
-                    onclick="screamUno()">UNO !</button>
-            <button id="contre-uno-btn"
-                    type="button"
-                    disabled="disabled"
-                    class="btn btn-warning btn-lg"
-                    onclick="screamContreUno()">CONTRE UNO !</button>
+            <div id="uno" style="display: none;" class="col-12">
+                <button id="uno-btn"
+                        type="button"
+                        disabled="disabled"
+                        class="btn btn-success btn-lg"
+                        onclick="screamUno()">UNO !</button>
+                <button id="contre-uno-btn"
+                        type="button"
+                        disabled="disabled"
+                        class="btn btn-warning btn-lg"
+                        onclick="screamContreUno()">CONTRE UNO !</button>
+            </div>
         </div>
     </div>
     <div class="col-12" id="ownerCards"></div>
@@ -122,7 +124,15 @@
                 $('#starting-block').hide();
                 $('#uno').show();
 
-                currentUser = gameData.roomPlayers.find(u => u.uuid === userId);
+                $('#otherPlayers caption').text(gameData.roomPlayers.length + ' joueurs');
+
+               currentUser = gameData.roomPlayers.find(u => u.uuid === userId);
+
+                var table = '';
+                gameData.roomPlayers.forEach(u => {
+                    table += getPlayerTurnTemplate(u, gameData.roomPlayerTurn.uuid === u.uuid, );
+                });
+                $('#otherPlayers tbody').html(table);
 
                 // Affiche les cartes de l'utilisateur courrant
                 let html = '', leftIndex = 0, topIndex = 0, zIndex = 5;
@@ -146,8 +156,6 @@
                 // Si c'est le tour de l'utilisateur courant, les cartes peuvent être cliquées pour être jouées
                 if(isUserTurn) {
                     let cardId;
-                    $('#roomTurn p').text("C'est votre tour !");
-                    $('.spinner').hide();
                     $('#ownerCards .uno-card').on('click', function(event) {
                         cardId = $(this).data('id');
 
@@ -167,17 +175,26 @@
                     });
 
                     $('#color-change-block .clickable').on('click', function (event) {
+
+                        let color;
+                        switch ($(this).data('color')) {
+                            case "red": color = CardColors.COLOR_RED; break;
+                            case "blue": color = CardColors.COLOR_BLUE; break;
+                            case "green": color = CardColors.COLOR_GREEN; break;
+                            case "yellow": color = CardColors.COLOR_YELLOW; break;
+                            default: break;
+                        }
                         console.log({
                             roomId: roomId,
                             playerId: userId,
                             cardId: cardId,
-                            color: $(this).data('color')
+                            color: color
                         })
                         socket.emit('playCard', {
                             roomId: roomId,
                             playerId: userId,
                             cardId: cardId,
-                            color: $(this).data('color')
+                            color: color
                         });
                         $('#template-color-change').fadeOut();
                     });
@@ -185,10 +202,6 @@
                     if (currentUser.cards.length === 1) {
                         $('#uno-btn').prop('disabled', false);
                     }
-                }
-                else {
-                    $('#roomTurn p').text("C'est au tour de " + gameData.roomPlayerTurn.username);
-                    $('.spinner').show();
                 }
 
                 let lastAddedCard = gameData.roomCardHeap.slice(-1)[0];
@@ -274,6 +287,15 @@
     function screamContreUno() {
         alert('CONTRE UNO !');
         // todo: if opponent didn't click UNO, then opponent picks up 7 cards
+    }
+
+    function getPlayerTurnTemplate(user, theirTurn = false) {
+       return   '<tr>' +
+                '<td class="text-center">' +
+                (theirTurn ? '<img src="../../img/hat.png" class="img-fluid" style="width:70px;height:auto;" alt="YourTurn"/>' : '') +
+                '</td>' +
+                '<td class="text-center ' + (theirTurn ? 'fw-bold' : '') +'">' + user.username +'</td>' +
+                '</tr>';
     }
 
     function getCardTemplate(card, origin, index, leftIndex, topIndex = 0, zIndex = 0) {

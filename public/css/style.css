@@ -17,14 +17,9 @@
 }
 
 #uno {
-    position: absolute;
-    bottom: 25%;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    width: 400px;
-    flex-direction: row;
-    flex-wrap: wrap;
 }
 
 #uno button {
@@ -157,4 +152,8 @@
     -moz-border-radius-bottomright: 100%;
     border-bottom-right-radius: 100%;
     -webkit-border-bottom-right-radius: 100%;
+}
+
+#rightSidebar {
+    padding: 3%
 }
