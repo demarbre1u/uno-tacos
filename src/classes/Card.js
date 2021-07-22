@@ -13,6 +13,11 @@ class Card {
     getColor() {
         return this.color;
     }
+
+    // Change la couleur de la carte
+    setColor(color) {
+        this.color = color;
+    }
 }
 
 module.exports = Card;

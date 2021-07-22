@@ -1,3 +1,5 @@
+const CardColors = require('../enum/CardColors');
+const CardTypes = require('../enum/CardTypes');
 const RoomStates = require('../enum/RoomStates');
 const TurnStates = require('../enum/TurnStates');
 const CardHelper = require('./CardHelper');
@@ -41,6 +43,15 @@ class Room {
     resetCardDeck() {
         const cardsToRemove = this.cardHeap.length - 1;
         let removedCards = this.cardHeap.splice(0, cardsToRemove);
+
+        removedCards.map(card => {
+            if(card.getType() === CardTypes.TYPE_COLOR_CHANGE) {
+                card.setColor(CardColors.COLOR_SPECIAL);
+            }
+
+            return card;
+        })
+
         this.cardDeck = CardHelper.shuffleCards(removedCards);
     }
 
@@ -55,7 +66,9 @@ class Room {
                 drawnCard = this.getCardFromDeck();
             }
     
-            currentPlayer.addCard(drawnCard);
+            if(drawnCard) {
+                currentPlayer.addCard(drawnCard);
+            }
         }
     }
 
