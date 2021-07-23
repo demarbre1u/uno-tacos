@@ -133,6 +133,23 @@
     width: 100px;
 }
 
+.custom-tooltip {
+    min-width: 100px;
+    display: none;
+    position: absolute;
+    left: 100px;
+    z-index: 99;
+    top: 31px;
+
+    transition: display 1s ease-in-out ;
+
+    background: black;
+    height: auto;
+    color: white;
+    padding: 6px;
+    border-radius: 12px;
+}
+
 #template-color-change {
     position: absolute;
     left: -15px;

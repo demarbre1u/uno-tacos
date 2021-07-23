@@ -43,8 +43,10 @@
             socket.emit('drawCard', {userId, roomId});
         });
 
-        $(".uno-card.user").mouseenter(() => {
-            console.log('hello')
+        $(".floating-logo img").mouseenter(function () {
+            $('.custom-tooltip').fadeIn();
+        }).mouseleave(function (event) {
+            $('.custom-tooltip').fadeOut();
         });
     });
 
