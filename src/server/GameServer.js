@@ -11,6 +11,7 @@ module.exports = function(io) {
 
     const MAX_PLAYER_NUMBER = 4;
     const MIN_PLAYER_NUMBER = 2;
+    const CONTRE_UNO_CARD_NUMBER = 4;
 
     // Lorsqu'un jouueur se connecte
     io.on('connection', socket => {
@@ -242,6 +243,11 @@ module.exports = function(io) {
                 player.setPlace(place);
             }
 
+            // On regarde s'il y a UNO
+            if(player.getCards().length === 1) {
+                room.setUno(player.getUuid());
+            }
+
             // On regarde si la partie est finie
             if(room.isGameOver()) {
                 // Si elle est finie, on change l'état de la partie
@@ -249,6 +255,24 @@ module.exports = function(io) {
             }
 
             const gameData = room.getRoomData();
+            io.to(roomId).emit('gameData', gameData);
+        });
+
+        socket.on('uno', data => {
+            const userId = data.userId;
+            const roomId = data.roomId;
+
+            console.log({data})
+
+            // On récupère la room
+            let currentRoom = roomList.find(room => room.getRoomName() === roomId);
+            if(currentRoom.getUno() !== userId) {
+                // Cas où le joueur a cliqué sur contre-UNO
+                currentRoom.drawCardsForPlayer(currentRoom.getUno(), CONTRE_UNO_CARD_NUMBER);
+            }
+            currentRoom.setUno(null);
+
+            const gameData = currentRoom.getRoomData();
             io.to(roomId).emit('gameData', gameData);
         });
     });
