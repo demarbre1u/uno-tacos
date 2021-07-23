@@ -278,10 +278,12 @@
 
     function screamUno() {
         socket.emit('uno', {userId, roomId});
+        $('#uno-btn').hide();
     }
 
     function screamContreUno() {
         socket.emit('uno', {userId, roomId});
+        $('#contre-uno-btn').hide();
     }
 
     function fillPlayersTable(players, roomPlayerTurn, showRanking = false) {
