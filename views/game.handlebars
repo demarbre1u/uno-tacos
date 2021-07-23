@@ -23,19 +23,14 @@
 
 <script src="../socket.io/socket.io.js"></script>
 <script>
-    var CardColors = JSON.parse('{{{CardColors}}}');
-    var CardTypes = JSON.parse('{{{CardTypes}}}');
-    var RoomStates = JSON.parse('{{{RoomStates}}}');
-
-    console.log({CardColors});
-    console.log({CardTypes});
-    console.log({RoomStates});
-
-    var roomId = '{{roomId}}';
-    var socket = io();
-    var userId;
-
-    var currentUser;
+    var
+            CardColors = JSON.parse('{{{CardColors}}}'),
+            CardTypes = JSON.parse('{{{CardTypes}}}'),
+            RoomStates = JSON.parse('{{{RoomStates}}}'),
+            roomId = '{{roomId}}',
+            socket = io(),
+            userId,
+            currentUser;
 
     $(document).ready(function() {
         // Lorsque le joueur clique sur le tas de carte, il demande au serveur de piocher
@@ -45,7 +40,7 @@
 
         $(".floating-logo img").mouseenter(function () {
             $('.custom-tooltip').fadeIn();
-        }).mouseleave(function (event) {
+        }).mouseleave(function () {
             $('.custom-tooltip').fadeOut();
         });
     });
@@ -64,11 +59,9 @@
     });
 
     socket.on('gameData', function(gameData) {
-        var gameState = gameData.roomState;
-        var gameOwner = gameData.roomOwner;
-
-        console.log(gameData);
-        var startGameBtn = document.getElementById('start-game-btn');
+        var gameState = gameData.roomState,
+                gameOwner = gameData.roomOwner,
+                startGameBtn = document.getElementById('start-game-btn');
 
         switch(gameState) {
             case RoomStates.WAITING_FOR_PLAYERS: 
