@@ -262,8 +262,6 @@ module.exports = function(io) {
             const userId = data.userId;
             const roomId = data.roomId;
 
-            console.log({data})
-
             // On récupère la room
             let currentRoom = roomList.find(room => room.getRoomName() === roomId);
             if(currentRoom.getUno() !== userId) {
