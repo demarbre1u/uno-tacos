@@ -1,4 +1,5 @@
 const { uid } = require('uid');
+const username = require('./../data/players.json');
 
 class Player {
     constructor(socket) {
@@ -6,9 +7,15 @@ class Player {
         socket.uuid = uuid;
 
         this.uuid = uuid;
-        this.username = `user#${this.uuid}`;
+        this.username = this.generateUsername();
         this.cards = [];
         this.place = 0;
+    }
+
+    // Génère un nom d'utilisateur aléatoire
+    generateUsername() {
+        const randomIndex = Math.floor( Math.random() * username.length );
+        return username[randomIndex];
     }
 
     // Ajoute une carte aux cartes d'un joueur
