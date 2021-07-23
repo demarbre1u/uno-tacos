@@ -79,6 +79,22 @@
 
 .uno-card .type {
     font-size: 2rem;
+
+    display: flex;
+
+    align-items: center;
+    align-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.uno-card .type.firstChild {
+    justify-content: flex-start;
+    padding-top: 8%;
+}
+
+.uno-card .type.lastChild {
+    justify-content: flex-end;
+    margin-top: 8%;
 }
 .uno-card .small.col-12 {
     height: 0;
@@ -92,9 +108,7 @@
     font-weight: normal;
     text-align: center;
     height: 100%;
-    display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 .uno-card .smallImg {
@@ -117,6 +131,23 @@
     top: 0;
     left: 0;
     width: 100px;
+}
+
+.custom-tooltip {
+    min-width: 100px;
+    display: none;
+    position: absolute;
+    left: 100px;
+    z-index: 99;
+    top: 31px;
+
+    transition: display 1s ease-in-out ;
+
+    background: black;
+    height: auto;
+    color: white;
+    padding: 6px;
+    border-radius: 12px;
 }
 
 #template-color-change {
@@ -147,6 +178,16 @@
 .ellipse {
     height: 90px;
     width: 100%;
+}
+
+.ellipse.on-card-big {
+    height:56px;
+}
+
+.ellipse.on-card-small {
+    height: 15px;
+    border: 1px solid gainsboro;
+    border-collapse: collapse;
 }
 
 .ellipse.top-left {
@@ -187,4 +228,9 @@
 
 .first-col p {
     margin: 0 auto;
+}
+
+#otherPlayers .winner td {
+    background: #4cdc14a1 !important;
+    box-shadow: none;
 }

@@ -23,19 +23,16 @@
 
 <script src="../socket.io/socket.io.js"></script>
 <script>
-    var CardColors = JSON.parse('{{{CardColors}}}');
-    var CardTypes = JSON.parse('{{{CardTypes}}}');
-    var RoomStates = JSON.parse('{{{RoomStates}}}');
-
-    console.log({CardColors});
-    console.log({CardTypes});
-    console.log({RoomStates});
-
-    var roomId = '{{roomId}}';
-    var socket = io();
-    var userId;
-
-    var currentUser;
+    var
+            CardColors = JSON.parse('{{{CardColors}}}'),
+            CardTypes = JSON.parse('{{{CardTypes}}}'),
+            RoomStates = JSON.parse('{{{RoomStates}}}'),
+            roomId = '{{roomId}}',
+            socket = io(),
+            userId,
+            currentUser,
+            WindowHost = window.location.origin
+    ;
 
     $(document).ready(function() {
         // Lorsque le joueur clique sur le tas de carte, il demande au serveur de piocher
@@ -43,8 +40,10 @@
             socket.emit('drawCard', {userId, roomId});
         });
 
-        $(".uno-card.user").mouseenter(() => {
-            console.log('hello')
+        $(".floating-logo img").mouseenter(function () {
+            $('.custom-tooltip').fadeIn();
+        }).mouseleave(function () {
+            $('.custom-tooltip').fadeOut();
         });
     });
 
@@ -62,11 +61,9 @@
     });
 
     socket.on('gameData', function(gameData) {
-        var gameState = gameData.roomState;
-        var gameOwner = gameData.roomOwner;
-
-        console.log(gameData);
-        var startGameBtn = document.getElementById('start-game-btn');
+        var gameState = gameData.roomState,
+                gameOwner = gameData.roomOwner,
+                startGameBtn = document.getElementById('start-game-btn');
 
         switch(gameState) {
             case RoomStates.WAITING_FOR_PLAYERS: 
@@ -203,7 +200,7 @@
                     break;
         }
 
-        $('#roomName').val('http://localhost:3000/game/' + gameData.roomName);
+        $('#roomName').val(WindowHost + '/game/' + gameData.roomName);
     });
 
     function redirectUser(type) {
@@ -226,9 +223,9 @@
             // Display the result in the element with id="demo"
             $("#secondsLeft").text(seconds + "s ");
             // If the count down is finished, write some text
-            if (distance < 0) {
+            if (distance < 1) {
                 clearInterval(x);
-                window.location.href = 'http://localhost:3000';
+                window.location.href = WindowHost;
             }
         }, 1000);
     }
@@ -278,9 +275,14 @@
         }
         firstCol += '</td>';
 
-        return  '<tr style="height: 50px !important;">' +
+        let cardsNumberCol = showRanking ? '' : '<td class="text-center cards-number" style="height: 45px !important;padding: 4%;">' +
+                '<img src="../../img/cards.png" alt="Cards" class="img-fluid me-2" style="width: 35px;"/>' +
+                user.cards.length +'</td>';
+
+        return  '<tr style="height: 50px !important;"' + (showRanking && user.place === 1 ? ' class="winner" ': '') + '>' +
                 firstCol +
                 '<td class="text-center ' + (isItMe ? 'fw-bold' : '') + '" style="height: 45px !important;padding: 4%;">' + user.username +'</td>' +
+                cardsNumberCol +
                 '</tr>';
     }
 
@@ -323,8 +325,24 @@
                 bigCardType = '+4';
                 break;
             case CardTypes.TYPE_COLOR_CHANGE:
-                smallCardType = '<img class="smallImg" src="../../img/card-types/color-change.png" alt=""/>';
-                bigCardType = '<img class="bigImg" src="../../img/card-types/color-change.png" alt=""/>';
+                smallCardType = '<div class="col-6 col-sm-3 col-md-2 col-lg-1 clickable" data-color="blue">' +
+                        '<div class="ellipse on-card-small top-left color-blue"></div></div> ' +
+                        '<div class="col-6 col-sm-3 col-md-2 col-lg-1 clickable" data-color="red">' +
+                        '<div class="ellipse on-card-small top-right color-red"></div></div>' +
+                        '<div class="w-100"></div>' +
+                        '<div class="col-6 col-sm-3 col-md-2 col-lg-1 clickable" data-color="yellow">' +
+                        '<div class="ellipse on-card-small bottom-left color-yellow"></div></div>' +
+                        '<div class="col-6 col-sm-3 col-md-2 col-lg-1 clickable" data-color="green">' +
+                        '<div class="ellipse on-card-small bottom-right color-green"></div></div>';
+                bigCardType = '<div class="col-6 col-sm-3 col-md-2 col-lg-4 clickable" data-color="blue">' +
+                        '<div class="ellipse on-card-big top-left color-blue"></div></div> ' +
+                        '<div class="col-6 col-sm-3 col-md-2 col-lg-4 clickable" data-color="red">' +
+                        '<div class="ellipse on-card-big top-right color-red"></div></div>' +
+                        '<div class="w-100"></div>' +
+                        '<div class="col-6 col-sm-3 col-md-2 col-lg-4 clickable" data-color="yellow">' +
+                        '<div class="ellipse on-card-big bottom-left color-yellow"></div></div>' +
+                        '<div class="col-6 col-sm-3 col-md-2 col-lg-4 clickable" data-color="green">' +
+                        '<div class="ellipse on-card-big bottom-right color-green"></div></div>';
                 break;
             default:
                 bigCardType = card.type;
@@ -346,9 +364,9 @@
                     'data-origin="'+ origin + '" ' +
                     'style="left: '+ leftIndex +';top: ' + topIndex +'px;z-index:' + zIndex + ';">' +
                 '<div class="row ' + colorClass + '">' +
-                '<div class="col-12 small"><div class="type">' + smallCardType + '</div></div> ' +
+                '<div class="col-12 small"><div class="type firstChild">' + smallCardType + '</div></div> ' +
                 '<div class="col-12"><div class="big type"> ' + bigCardType + '</div></div> ' +
-                '<div class="col-12 small text-right"><div class="type">' + smallCardType + '</div></div> ' +
+                '<div class="col-12 small text-right"><div class="type lastChild">' + smallCardType + '</div></div> ' +
                 '</div>' +
                 '</div>';
     }

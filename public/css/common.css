@@ -23,6 +23,6 @@ h1 {
     font-size: 5rem;
 }
 
-a h1 {
+#gameOver a {
     text-decoration: none;
 }
