@@ -30,7 +30,9 @@
             roomId = '{{roomId}}',
             socket = io(),
             userId,
-            currentUser;
+            currentUser,
+            WindowHost = window.location.origin
+    ;
 
     $(document).ready(function() {
         // Lorsque le joueur clique sur le tas de carte, il demande au serveur de piocher
@@ -198,7 +200,7 @@
                     break;
         }
 
-        $('#roomName').val('http://localhost:3000/game/' + gameData.roomName);
+        $('#roomName').val(WindowHost + '/game/' + gameData.roomName);
     });
 
     function redirectUser(type) {
@@ -221,9 +223,9 @@
             // Display the result in the element with id="demo"
             $("#secondsLeft").text(seconds + "s ");
             // If the count down is finished, write some text
-            if (distance < 0) {
+            if (distance < 1) {
                 clearInterval(x);
-                window.location.href = 'http://localhost:3000';
+                window.location.href = WindowHost;
             }
         }, 1000);
     }
