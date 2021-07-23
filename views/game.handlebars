@@ -19,6 +19,7 @@
         {{> card-deck}}
     </div>
     <div class="col-12" id="ownerCards"></div>
+    {{> uno}}
 </div>
 
 <script src="../socket.io/socket.io.js"></script>
@@ -96,17 +97,11 @@
                 $('#uno').show();
                 $('#gameOver').hide();
 
+                fillPlayersTable(gameData.roomPlayers, gameData.roomPlayerTurn);
                 $('#otherPlayers caption').text(gameData.roomPlayers.length + ' joueurs');
 
                currentUser = gameData.roomPlayers.find(u => u.uuid === userId);
-
-                var table = '';
-                gameData.roomPlayers.forEach(u => {
-                    table += getPlayerTurnTemplate(u, gameData.roomPlayerTurn.uuid === u.uuid);
-                });
-                $('#otherPlayers tbody').html(table);
-
-                // Affiche les cartes de l'utilisateur courrant
+               // Affiche les cartes de l'utilisateur courrant
                 let html = '', leftIndex = 0, topIndex = 0, zIndex = 5;
                 currentUser.cards.forEach((c, index) => {
                     let modulo = index % 7;
@@ -178,6 +173,32 @@
                 $('#contre-uno-btn').prop('disabled', gameData.roomUno === null || gameData.roomUno === userId);
                 $('#uno-btn').prop('disabled', currentUser.cards.length !== 1);
 
+                if ($('#contre-uno-btn').prop('disabled') === false) {
+                    let width = $('#contre-uno-btn').width(),
+                            height = $('#contre-uno-btn').height();
+                    $('#contre-uno-btn').css({
+                        top: (Math.floor(Math.random() * 101) - (100 * height / window.innerHeight)) + 'vh',
+                        left: (Math.floor(Math.random() * 101) - (100 * width / window.innerWidth)) + 'vw',
+                        'z-index': 999
+                    });
+                    $('#contre-uno-btn').show();
+                } else {
+                    $('#contre-uno-btn').hide();
+                }
+
+                if ($('#uno-btn').prop('disabled') === false) {
+                    let width = $('#uno-btn').width(),
+                    height = $('#uno-btn').height();
+                    $('#uno-btn').css({
+                        top: (Math.floor(Math.random() * 101) - (100 * height / window.innerHeight)) + 'vh',
+                        left: (Math.floor(Math.random() * 101) - (100 * width / window.innerWidth)) + 'vw',
+                        'z-index': 999
+                    });
+                    $('#uno-btn').show();
+                } else {
+                    $('#uno-btn').hide();
+                }
+
                 break;
 
                 case RoomStates.GAME_OVER:
@@ -188,13 +209,12 @@
                     gameData.roomPlayers.sort((a, b) => {
                         return a.place - b.place;
                     });
-                    gameData.roomPlayers.forEach(u => {
-                        table += getPlayerTurnTemplate(u, gameData.roomPlayerTurn.uuid === u.uuid, true);
-                    });
-                    $('#otherPlayers tbody').html(table);
+
+                    fillPlayersTable(gameData.roomPlayers, gameData.roomPlayerTurn, true);
                     $('#otherPlayers caption').hide();
 
-                    gameOverDiv.append($('#otherPlayers'));
+                    let players = $('#roomTurn .table-responsive').html();
+                    gameOverDiv.append(players);
                     $('#gamePlay').hide();
                     gameOverDiv.show();
                     break;
@@ -262,6 +282,14 @@
 
     function screamContreUno() {
         socket.emit('uno', {userId, roomId});
+    }
+
+    function fillPlayersTable(players, roomPlayerTurn, showRanking = false) {
+        let table = '';
+        players.forEach(u => {
+            table += getPlayerTurnTemplate(u, roomPlayerTurn.uuid === u.uuid, showRanking);
+        });
+        $('#otherPlayers tbody').html(table);
     }
 
     function getPlayerTurnTemplate(user, theirTurn = false, showRanking = false) {

@@ -234,3 +234,8 @@
     background: #4cdc14a1 !important;
     box-shadow: none;
 }
+
+button.uno {
+    position: absolute;
+    width: 250px;
+}
