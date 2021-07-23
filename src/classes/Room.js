@@ -4,7 +4,7 @@ const RoomStates = require('../enum/RoomStates');
 const TurnStates = require('../enum/TurnStates');
 const CardHelper = require('./CardHelper');
 
-const STARTING_CARDS_PER_HAND = 2;
+const STARTING_CARDS_PER_HAND = 7;
 
 class Room {
     constructor(name, owner) {
