@@ -26,6 +26,11 @@ module.exports = function(io) {
 
             // On parcourt toutes les rooms
             roomList.forEach(room => {
+                // Si le joueur ne se trouve pas dans la room, on ne fait rien
+                if(! room.containsPlayer(player.getUuid())) {
+                    return;
+                }
+
                 room.removePlayer(player.getUuid());
 
                 // Si le propriétaire de la Room s'en va et qu'il reste des joueurs, on change de propriétaire
