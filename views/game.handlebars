@@ -7,7 +7,7 @@
     <div class="col-8" id="roomCardHeap"></div>
     <div class="col-4" id="rightSidebar">
         <div class="row justify-content-start align-content-center position-relative" style="height:200px" id="roomTurn">
-            <div class="table-responsive">
+            <div class="col-12 table-responsive">
                 <table id="otherPlayers"
                        class="table table-bordered table-sm
                        table-striped table-hover table-light caption-top align-middle">
@@ -66,15 +66,16 @@
         var gameOwner = gameData.roomOwner;
 
         console.log(gameData);
+        var startGameBtn = document.getElementById('start-game-btn');
 
         switch(gameState) {
             case RoomStates.WAITING_FOR_PLAYERS: 
+                $('#gameOver').hide();
                 $('#starting-block').show();
                 $('#starting-block #players').html('');
                 $('#ownerCards').html('');
                 $('#gamePlay').hide();
 
-                var startGameBtn = document.getElementById('start-game-btn');
                 startGameBtn.style.display = 'hidden';
 
                 break;
@@ -82,10 +83,10 @@
                 $('#starting-block').show();
                 $('#ownerCards').html('');
                 $('#gamePlay').hide();
+                $('#gameOver').hide();
 
                 // Affiche le bouton "Start game" s'il y a assez de joueurs, et que l'utilisateur courrant est le propriétaire de la room
                 if(gameOwner === userId) {
-                    var startGameBtn = document.getElementById('start-game-btn');
                     startGameBtn.style.display = 'block';
                 }
 
@@ -96,6 +97,7 @@
                 $('#gamePlay').show();
                 $('#starting-block').hide();
                 $('#uno').show();
+                $('#gameOver').hide();
 
                 $('#otherPlayers caption').text(gameData.roomPlayers.length + ' joueurs');
 
@@ -152,7 +154,7 @@
 
                     $(document).off('click', '#color-change-block .clickable');
                     $(document).on('click', '#color-change-block .clickable', function (event) {
-                        event.stopPropagation
+                        event.stopPropagation();
                         let color;
                         switch ($(this).data('color')) {
                             case "red": color = CardColors.COLOR_RED; break;
@@ -161,12 +163,6 @@
                             case "yellow": color = CardColors.COLOR_YELLOW; break;
                             default: break;
                         }
-                        console.log({
-                            roomId: roomId,
-                            playerId: userId,
-                            cardId: cardId,
-                            color: color
-                        })
                         socket.emit('playCard', {
                             roomId: roomId,
                             playerId: userId,
@@ -191,6 +187,24 @@
                 }
 
                 break;
+                case RoomStates.GAME_OVER:
+                    let gameOverDiv = $('#gameOver');
+
+                    table = '';
+
+                    gameData.roomPlayers.sort((a, b) => {
+                        return a.place - b.place;
+                    });
+                    gameData.roomPlayers.forEach(u => {
+                        table += getPlayerTurnTemplate(u, gameData.roomPlayerTurn.uuid === u.uuid, true);
+                    });
+                    $('#otherPlayers tbody').html(table);
+                    $('#otherPlayers caption').hide();
+
+                    gameOverDiv.append($('#otherPlayers'));
+                    $('#gamePlay').hide();
+                    gameOverDiv.show();
+                    break;
         }
 
         $('#roomName').val('http://localhost:3000/game/' + gameData.roomName);
@@ -259,13 +273,21 @@
         // todo: if opponent didn't click UNO, then opponent picks up 7 cards
     }
 
-    function getPlayerTurnTemplate(user, theirTurn = false) {
-        let isItMe = user.uuid === userId;
-        return   '<tr style="height: 50px !important;">' +
-                '<td class="text-center" style="height: 50px !important;">'+ (theirTurn ?
-                        ' <img src="../../img/hat.png" class="img-fluid" style="width:auto;height:50px;" alt="YourTurn"/>'
-                        : '') + '</td>' +
-                '<td class="text-center ' + (isItMe ? 'fw-bold' : '') + '" style="height: 45px !important;">' + user.username +'</td>' + '</tr>';
+    function getPlayerTurnTemplate(user, theirTurn = false, showRanking = false) {
+        let isItMe = user.uuid === userId,
+        firstCol = '<td class="text-center first-col" style="height: 50px !important;">';
+
+        if (showRanking) {
+            firstCol += '<p class="flex-center game-over">' + user.place + '</p>';
+        } else if (theirTurn) {
+            firstCol += '<img src="../../img/hat.png" class="img-fluid" style="width:auto;height:50px;" alt="YourTurn"/>';
+        }
+        firstCol += '</td>';
+
+        return  '<tr style="height: 50px !important;">' +
+                firstCol +
+                '<td class="text-center ' + (isItMe ? 'fw-bold' : '') + '" style="height: 45px !important;padding: 4%;">' + user.username +'</td>' +
+                '</tr>';
     }
 
     function getCardTemplate(card, origin, index, leftIndex, topIndex = 0, zIndex = 0) {
