@@ -15,7 +15,7 @@
 }
 
 .elevate:hover {
-    top: -60px !important;
+    transform: translateY(-60px);
 }
 
 .shaking:hover {
