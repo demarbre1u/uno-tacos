@@ -153,6 +153,12 @@ module.exports = function(io) {
 
             let room = roomList.find(room => room.getRoomName() === roomId);
             let player = room.getPlayer(playerId);
+
+            // On vérifie que c'est bien le tour du joueur 
+            if(room.getPlayerTurn().getUuid() !== playerId) {
+                return;
+            }
+
             // On récupère la carte qui vient d'être jouée
             const cardPlayed = player.getCard(cardId);
 
