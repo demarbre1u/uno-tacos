@@ -178,15 +178,11 @@
                 let lastAddedCard = gameData.roomCardHeap.slice(-1)[0];
                 $('#roomCardHeap').html(getCardTemplate(lastAddedCard, 'deck', 0, 0));
 
-                if (gameData.roomPlayers.some(p => p.cards.length === 1)) {
-                    $('#contre-uno-btn').prop('disabled', false);
-                }
-
-                if (currentUser.cards.length === 1) {
-                    $('#uno-btn').prop('disabled', false);
-                }
+                $('#contre-uno-btn').prop('disabled', gameData.roomUno === null || gameData.roomUno === userId);
+                $('#uno-btn').prop('disabled', currentUser.cards.length !== 1);
 
                 break;
+
                 case RoomStates.GAME_OVER:
                     let gameOverDiv = $('#gameOver');
 
