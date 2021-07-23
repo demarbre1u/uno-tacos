@@ -48,7 +48,6 @@ class Player {
 
     // Indique si un joueur a gagné ou non
     hasPlayerWon() {
-        console.log(this.cards)
         return this.cards.length === 0;
     }
 

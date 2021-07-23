@@ -136,9 +136,6 @@ class Room {
     // Retourne le nombre de joueurs dans la Room en train de jouer
     getNumberOfPlayersInGame() {
         const playerNumbers = this.playerList.filter(player => player.getPlace() === 0).length;
-        
-        console.log(playerNumbers)
-
         return playerNumbers;
     }
 
