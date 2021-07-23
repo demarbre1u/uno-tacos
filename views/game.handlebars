@@ -323,8 +323,25 @@
                 bigCardType = '+4';
                 break;
             case CardTypes.TYPE_COLOR_CHANGE:
-                smallCardType = '<img class="smallImg" src="../../img/card-types/color-change.png" alt=""/>';
-                bigCardType = '<img class="bigImg" src="../../img/card-types/color-change.png" alt=""/>';
+                smallCardType = '<div class="col-6 col-sm-3 col-md-2 col-lg-1 clickable" data-color="blue">' +
+                        '<div class="ellipse on-card-small top-left color-blue"></div></div> ' +
+                        '<div class="col-6 col-sm-3 col-md-2 col-lg-1 clickable" data-color="red">' +
+                        '<div class="ellipse on-card-small top-right color-red"></div></div>' +
+                        '<div class="w-100"></div>' +
+                        '<div class="col-6 col-sm-3 col-md-2 col-lg-1 clickable" data-color="yellow">' +
+                        '<div class="ellipse on-card-small bottom-left color-yellow"></div></div>' +
+                        '<div class="col-6 col-sm-3 col-md-2 col-lg-1 clickable" data-color="green">' +
+                        '<div class="ellipse on-card-small bottom-right color-green"></div></div>';
+                //bigCardType = '<img class="bigImg" src="../../img/card-types/color-change.png" alt=""/>';
+                bigCardType = '<div class="col-6 col-sm-3 col-md-2 col-lg-4 clickable" data-color="blue">' +
+                        '<div class="ellipse on-card-big top-left color-blue"></div></div> ' +
+                        '<div class="col-6 col-sm-3 col-md-2 col-lg-4 clickable" data-color="red">' +
+                        '<div class="ellipse on-card-big top-right color-red"></div></div>' +
+                        '<div class="w-100"></div>' +
+                        '<div class="col-6 col-sm-3 col-md-2 col-lg-4 clickable" data-color="yellow">' +
+                        '<div class="ellipse on-card-big bottom-left color-yellow"></div></div>' +
+                        '<div class="col-6 col-sm-3 col-md-2 col-lg-4 clickable" data-color="green">' +
+                        '<div class="ellipse on-card-big bottom-right color-green"></div></div>';
                 break;
             default:
                 bigCardType = card.type;
@@ -346,9 +363,9 @@
                     'data-origin="'+ origin + '" ' +
                     'style="left: '+ leftIndex +';top: ' + topIndex +'px;z-index:' + zIndex + ';">' +
                 '<div class="row ' + colorClass + '">' +
-                '<div class="col-12 small"><div class="type">' + smallCardType + '</div></div> ' +
+                '<div class="col-12 small"><div class="type firstChild">' + smallCardType + '</div></div> ' +
                 '<div class="col-12"><div class="big type"> ' + bigCardType + '</div></div> ' +
-                '<div class="col-12 small text-right"><div class="type">' + smallCardType + '</div></div> ' +
+                '<div class="col-12 small text-right"><div class="type lastChild">' + smallCardType + '</div></div> ' +
                 '</div>' +
                 '</div>';
     }
