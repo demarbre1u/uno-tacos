@@ -16,7 +16,7 @@ class CardHelper {
     
         // On génère les cartes spéciales de changement de couleur, et +4
         cardDeck.push(new Card(CardTypes.TYPE_PLUS_4, CardColors.COLOR_SPECIAL));
-        cardDeck.push(new Card(CardTypes.TYPE_COLOR_CHANGE, CardColors.COLOR_SPECIAL));
+        cardDeck.push(new Card(CardTypes.TYPE_PLUS_4, CardColors.COLOR_SPECIAL));
         cardDeck.push(new Card(CardTypes.TYPE_COLOR_CHANGE, CardColors.COLOR_SPECIAL));
         cardDeck.push(new Card(CardTypes.TYPE_COLOR_CHANGE, CardColors.COLOR_SPECIAL));
 

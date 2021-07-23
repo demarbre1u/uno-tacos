@@ -76,6 +76,10 @@ class Room {
     drawCardsForPlayer(playerId, cardNumber) {
         let currentPlayer = this.getPlayer(playerId);
 
+        if(! currentPlayer) {
+            return;
+        }
+
         for(let i = 0; i < cardNumber; i++) {
             let drawnCard = this.getCardFromDeck();
             if(! drawnCard) {
