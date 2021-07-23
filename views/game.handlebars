@@ -278,9 +278,14 @@
         }
         firstCol += '</td>';
 
-        return  '<tr style="height: 50px !important;">' +
+        let cardsNumberCol = showRanking ? '' : '<td class="text-center cards-number" style="height: 45px !important;padding: 4%;">' +
+                '<img src="../../img/cards.png" alt="Cards" class="img-fluid me-2" style="width: 35px;"/>' +
+                user.cards.length +'</td>';
+
+        return  '<tr style="height: 50px !important;"' + (showRanking && user.place === 1 ? ' class="winner" ': '') + '>' +
                 firstCol +
                 '<td class="text-center ' + (isItMe ? 'fw-bold' : '') + '" style="height: 45px !important;padding: 4%;">' + user.username +'</td>' +
+                cardsNumberCol +
                 '</tr>';
     }
 
@@ -332,7 +337,6 @@
                         '<div class="ellipse on-card-small bottom-left color-yellow"></div></div>' +
                         '<div class="col-6 col-sm-3 col-md-2 col-lg-1 clickable" data-color="green">' +
                         '<div class="ellipse on-card-small bottom-right color-green"></div></div>';
-                //bigCardType = '<img class="bigImg" src="../../img/card-types/color-change.png" alt=""/>';
                 bigCardType = '<div class="col-6 col-sm-3 col-md-2 col-lg-4 clickable" data-color="blue">' +
                         '<div class="ellipse on-card-big top-left color-blue"></div></div> ' +
                         '<div class="col-6 col-sm-3 col-md-2 col-lg-4 clickable" data-color="red">' +

@@ -212,3 +212,8 @@
 .first-col p {
     margin: 0 auto;
 }
+
+#otherPlayers .winner td {
+    background: #4cdc14a1 !important;
+    box-shadow: none;
+}
