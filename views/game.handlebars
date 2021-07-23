@@ -264,13 +264,11 @@
     }
 
     function screamUno() {
-        alert('UNO !');
-        // todo: if opponent clicked on CONTRE UNO, then player picks up 7 cards
+        socket.emit('uno', {userId, roomId});
     }
 
     function screamContreUno() {
-        alert('CONTRE UNO !');
-        // todo: if opponent didn't click UNO, then opponent picks up 7 cards
+        socket.emit('uno', {userId, roomId});
     }
 
     function getPlayerTurnTemplate(user, theirTurn = false, showRanking = false) {

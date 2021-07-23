@@ -4,7 +4,7 @@ const RoomStates = require('../enum/RoomStates');
 const TurnStates = require('../enum/TurnStates');
 const CardHelper = require('./CardHelper');
 
-const STARTING_CARDS_PER_HAND = 1;
+const STARTING_CARDS_PER_HAND = 2;
 
 class Room {
     constructor(name, owner) {
@@ -16,6 +16,7 @@ class Room {
 
         this.turnDirection = TurnStates.TURN_LEFT;
         this.playerTurn = null;
+        this.uno = null;
 
         this.cardHeap = [];
         this.cardDeck = [];
@@ -25,6 +26,7 @@ class Room {
     startGame() {
         this.state = RoomStates.GAME_ONGOING;
         this.cardsToDraw = 0;
+        this.uno = null;
         this.turnDirection = TurnStates.TURN_LEFT;
         this.cardHeap = [];
 
@@ -42,6 +44,16 @@ class Room {
             const cards = this.cardDeck.splice(0, STARTING_CARDS_PER_HAND);
             cards.forEach(card => player.addCard(card));
         })
+    }
+
+    // Retourne l'uuid du joueur qui peut dire UNO, s'il y en a un
+    getUno() {
+        return this.uno;
+    }
+
+    // Change l'uuid du joueur qui peut dire UNO
+    setUno(playerUuid) {
+        this.uno = playerUuid;
     }
 
     // Réinitialise le deck de carte
@@ -251,7 +263,8 @@ class Room {
             roomPlayerTurn: this.playerTurn,
             roomTurnDirection: this.turnDirection, 
             roomCardDeck: this.cardDeck, 
-            roomCardHeap: this.cardHeap
+            roomCardHeap: this.cardHeap, 
+            roomUno: this.uno
         };
     }
 }
