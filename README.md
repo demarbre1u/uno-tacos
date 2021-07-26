@@ -15,6 +15,8 @@ Ce projet a été réalisé par :
  - [Olivia B.](https://github.com/OliviaB14)
  - [Allan D.](https://github.com/demarbre1u)
 
+L'application est également hébergée sur Heroku, et est accessible depuis l'URL : https://uno-tacos.herokuapp.com/
+
 ## Comment jouer
 
 Il faut d'abord installer le projet : 
@@ -31,4 +33,4 @@ Une fois le projet installé, il faut lancer le serveur :
 npm start
 ```
 
-Pour accéder au jeu, il ne reste plus qu'à se rendre sur l'URL http://localhost:3000
+Pour accéder au jeu, il ne reste plus qu'à se rendre sur l'URL http://localhost:8080
