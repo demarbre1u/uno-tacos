@@ -165,7 +165,11 @@ module.exports = function(io) {
             }
 
             // On récupère la carte qui vient d'être jouée
+            // Si elle n'existe pas, on ne fait rien
             const cardPlayed = player.getCard(cardId);
+            if(! cardPlayed) {
+                return;
+            }
 
             // On récupère la dernière carte jouée
             const lastPlayedCard = room.getLastPlayedCard();
