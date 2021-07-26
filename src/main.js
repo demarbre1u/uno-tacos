@@ -6,7 +6,7 @@ const express = require('express');
 const exphbs  = require('express-handlebars');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 80;
 
 const http = require('http');
 const server = http.createServer(app);
@@ -41,5 +41,5 @@ gameServer(io);
 
 // On lance le serveur sur le port $port
 server.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
+    console.log(`Server listening on port ${port}`);
 });
