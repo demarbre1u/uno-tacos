@@ -3,8 +3,12 @@
 ## Présentation
 
 <p align="center">
-  <img src="https://github.com/demarbre1u/uno-tacos/blob/main/docs/screens/screen.png?raw=true" width="800" title="Capture d'écran Uno Tacos" alt="Capture d'écran Uno Tacos">
+  <img src="https://github.com/demarbre1u/uno-tacos/blob/main/docs/screens/screen01.png?raw=true" width="375" title="Capture d'écran Uno Tacos" alt="Capture d'écran Uno Tacos">
+  <img src="https://github.com/demarbre1u/uno-tacos/blob/main/docs/screens/screen02.png?raw=true" width="375" title="Capture d'écran Uno Tacos" alt="Capture d'écran Uno Tacos">
+
+  <img src="https://github.com/demarbre1u/uno-tacos/blob/main/docs/screens/screen03.png?raw=true" width="750" title="Capture d'écran Uno Tacos" alt="Capture d'écran Uno Tacos">
 </p>
+
 
 Ce projet est un jeu de Uno, ayant pour thème le tacos.
 
