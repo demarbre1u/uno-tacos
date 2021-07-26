@@ -28,7 +28,7 @@ npm i
 Une fois le projet installé, il faut lancer le serveur : 
 
 ```bash
-node src/main.js
+npm start
 ```
 
 Pour accéder au jeu, il ne reste plus qu'à se rendre sur l'URL http://localhost:3000
